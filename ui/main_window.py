@@ -1,8 +1,7 @@
 import sys
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget,
-                               QHBoxLayout, QSizePolicy)
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QSizePolicy
 from PySide6.QtCore import Qt
-
+from PySide6.QtGui import QColor
 
 from ui.content_area import ContentArea
 from ui.sidebar import Sidebar
@@ -13,25 +12,40 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("LP Problems Solver")
         self.setMinimumSize(1100, 750)
-        self.setStyleSheet("background-color: #1a1a2e;")
+
+        # ── Global palette for the app ──
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #111827;
+            }
+            QToolTip {
+                background-color: #16213e;
+                color: #e2e8f0;
+                border: 1px solid #1a4a8a;
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+        """)
 
         central_widget = QWidget()
-        central_widget.setSizePolicy(
-            QSizePolicy.Expanding,
-            QSizePolicy.Expanding
-        )
+        central_widget.setStyleSheet("background-color: #111827;")
+        central_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setCentralWidget(central_widget)
 
         self.main_layout = QHBoxLayout(central_widget)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
 
+        # ── Sidebar ──
         self.sidebar = Sidebar()
         self.main_layout.addWidget(self.sidebar)
-        self.main_layout.setAlignment(self.sidebar, Qt.AlignLeft)
 
+        # ── Content area ──
         self.content = ContentArea()
         self.main_layout.addWidget(self.content)
+
+        # ── Wire sidebar → content page switching ──
+        self.sidebar.section_changed.connect(self.content.set_page)
 
 
 if __name__ == "__main__":
