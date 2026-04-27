@@ -1,10 +1,11 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QSizePolicy
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QStackedWidget
 from PySide6.QtGui import QColor
 
 from ui.pages.problem_setup_page import ProblemSetupPage
 from ui.pages.coefficients_page import CoefficientsPage
 from ui.pages.solution_page import SolutionPage
 from ui.pages.tableau_steps_page import TableauStepsPage
+from core.simplex_solver import SimplexSolver
 
 
 class ContentArea(QWidget):
@@ -104,7 +105,19 @@ class ContentArea(QWidget):
             
             print("Initial Basis Indices:", tm.initial_basis)
             print("\nInitial Tableau Matrix:")
+            np.set_printoptions(suppress=True, formatter={'float_kind': lambda x: f"{x:.2f}"})
             print(np.round(tm.tableau_matrix, 2))
+
+            solver = SimplexSolver(tm, lp_problem)
+            result = solver.simple_solve()
+            print("Result:", solver.result)
+            print("Solution:", result)
+            self.solution.reset()
+            self.set_page(2)
+            if solver.result == "optimal":
+                self.solution.show_solution(result)
+            elif solver.result == "unbounded":
+                self.solution.show_unbounded()
             
         except Exception as e:
             print(f"Error executing core solver logic: {e}")
