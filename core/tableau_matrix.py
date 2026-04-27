@@ -45,15 +45,3 @@ class TableauMatrix:
 
 
 
-# data={
-#     "obj_type":"max",
-#     "obj_coefficients":[1,2,3,4],
-#     "constraints":[{"LHS":[5,3,5,1],
-#                     "constraint_type":constraint_type.smaller_equal,
-#                     "RHS":120},
-#                    {"LHS": [2, 3, 7, 1],
-#                     "constraint_type": constraint_type.equal,
-#                     "RHS": 200}
-#                    ],
-#     "restrictions":["free,"non_negative",...]
-# }
