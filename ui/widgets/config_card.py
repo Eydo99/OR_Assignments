@@ -1,7 +1,10 @@
 from PySide6.QtWidgets import QComboBox, QSpinBox, QHBoxLayout, QLabel, QVBoxLayout, QFrame
+from PySide6.QtCore import Qt
 
 
 class ConfigCard(QFrame):
+    """Configuration card: objective type, variable count, and constraint count."""
+
     def __init__(self):
         super().__init__()
         self.setStyleSheet("""
@@ -12,7 +15,7 @@ class ConfigCard(QFrame):
                 padding: 8px;
             }
             QLabel {
-                color: #e2e8f0;
+                color: #cbd5e0;
                 font-size: 13px;
                 border: none;
                 background: transparent;
@@ -22,8 +25,11 @@ class ConfigCard(QFrame):
                 color: #e2e8f0;
                 border: 1px solid #1a4a8a;
                 border-radius: 6px;
-                padding: 4px 8px;
+                padding: 5px 10px;
                 font-size: 12px;
+            }
+            QComboBox:focus, QSpinBox:focus {
+                border: 1px solid #4f9cf9;
             }
             QComboBox::drop-down {
                 border: none;
@@ -32,6 +38,12 @@ class ConfigCard(QFrame):
             QComboBox::down-arrow {
                 width: 10px;
                 height: 10px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #16213e;
+                color: #e2e8f0;
+                selection-background-color: #0f3460;
+                border: 1px solid #1a4a8a;
             }
             QSpinBox::up-button, QSpinBox::down-button {
                 background-color: #1a4a8a;
@@ -42,22 +54,27 @@ class ConfigCard(QFrame):
                 background-color: #4f9cf9;
             }
             QSpinBox {
-                color: #e2e8f0;
                 selection-background-color: #1a4a8a;
                 selection-color: #e2e8f0;
             }
         """)
 
         layout = QVBoxLayout(self)
-        layout.setSpacing(12)
+        layout.setSpacing(14)
 
         title = QLabel("Configuration")
-        title.setStyleSheet("color: #e2e8f0; font-size: 13px; font-weight: 600; border: none; background: transparent;")
+        title.setStyleSheet("""
+            color: #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+        """)
         layout.addWidget(title)
 
         self.obj_combo = self._make_combo(["Maximize", "Minimize"])
-        self.variables_spin = self._make_spinbox()
-        self.constraints_spin = self._make_spinbox()
+        self.variables_spin = self._make_spinbox(value=3)
+        self.constraints_spin = self._make_spinbox(value=2)
 
         for label_text, widget in [
             ("Objective type", self.obj_combo),
@@ -66,7 +83,7 @@ class ConfigCard(QFrame):
         ]:
             row = QHBoxLayout()
             label = QLabel(label_text)
-            label.setFixedWidth(120)
+            label.setFixedWidth(130)
             row.addWidget(label)
             row.addWidget(widget)
             row.addStretch()
@@ -74,13 +91,15 @@ class ConfigCard(QFrame):
 
     def _make_combo(self, items):
         combo = QComboBox()
+        combo.setCursor(Qt.PointingHandCursor)
         for item in items:
             combo.addItem(item)
         return combo
 
-    def _make_spinbox(self):
+    def _make_spinbox(self, value=1):
         spin = QSpinBox()
         spin.setMinimum(1)
-        spin.setMaximum(10)
-        spin.setFixedWidth(60)
+        spin.setMaximum(20)
+        spin.setValue(value)
+        spin.setFixedWidth(70)
         return spin

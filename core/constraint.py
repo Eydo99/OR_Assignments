@@ -1,5 +1,5 @@
 class Constraint:
-    def __init__(self, LHS, constraint_type,RHS):
-        self.LHS = LHS
+    def __init__(self, lhs, constraint_type,rhs):
+        self.lhs = lhs
         self.constraint_type = constraint_type
-        self.RHS = RHS
+        self.rhs = rhs
