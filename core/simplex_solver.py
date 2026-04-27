@@ -26,7 +26,8 @@ class SimplexSolver:
                 for i in range(len(self.matrix)-1):
                     if self.matrix[i][min_index]<=0: continue
                     else:
-                        current = self.matrix[i][len(self.matrix) - 1] / self.matrix[i][min_index]
+                        current = self.matrix[i][len(self.matrix[0]) - 1] / self.matrix[i][min_index]
+                        if current<0: continue
                         if current<min_current:
                             min_current=current
                             min_pivot_index=i
