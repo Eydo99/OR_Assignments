@@ -33,7 +33,7 @@ class TableauMatrix:
         z_row = np.append(z_row, np.zeros(len(self.lp_problem.constraints)))
         self.tableau_matrix=np.vstack([self.tableau_matrix,z_row])
 
-        rhs_col.append(0.0)  # Z row RHS is initially 0
+        rhs_col.append(0.0)
         self.tableau_matrix=np.hstack([self.tableau_matrix,np.array(rhs_col).reshape(-1,1)])
 
 

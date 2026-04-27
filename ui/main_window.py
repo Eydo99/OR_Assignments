@@ -1,8 +1,5 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QSizePolicy
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor
-
 from ui.content_area import ContentArea
 from ui.sidebar import Sidebar
 

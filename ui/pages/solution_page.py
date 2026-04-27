@@ -59,6 +59,7 @@ class SolutionPage(QWidget):
 
         # ── Results card (hidden by default) ──
         self._results_card = None
+        self._unbounded_card = None
 
         self._layout.addStretch()
 
@@ -104,6 +105,51 @@ class SolutionPage(QWidget):
         card_layout.addWidget(sub)
 
         return card
+
+    def show_unbounded(self):
+        self._placeholder_card.hide()
+        card = QFrame()
+        card.setStyleSheet("""
+            QFrame {
+                background-color: #16213e;
+                border: 1px solid #0f3460;
+                border-radius: 10px;
+                padding: 40px;
+            }
+        """)
+        card_layout = QVBoxLayout(card)
+        card_layout.setAlignment(Qt.AlignCenter)
+        card_layout.setSpacing(16)
+
+        icon_label = QLabel("⚠️")
+        icon_label.setStyleSheet("font-size: 40px; border: none; background: transparent;")
+        icon_label.setAlignment(Qt.AlignCenter)
+        card_layout.addWidget(icon_label)
+
+        msg = QLabel("Unbounded Problem")
+        msg.setStyleSheet("""
+            color: #fc8181;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+        """)
+        msg.setAlignment(Qt.AlignCenter)
+        card_layout.addWidget(msg)
+
+        sub = QLabel("The objective function can grow infinitely. Check your constraints.")
+        sub.setStyleSheet("""
+            color: #718096;
+            font-size: 12px;
+            border: none;
+            background: transparent;
+        """)
+        sub.setAlignment(Qt.AlignCenter)
+        sub.setWordWrap(True)
+        card_layout.addWidget(sub)
+
+        self._layout.insertWidget(1, card)
+        self._unbounded_card = card
 
     # ── Public API (stub – to be wired after solver is implemented) ──
     def show_solution(self, data: dict):
@@ -181,4 +227,9 @@ class SolutionPage(QWidget):
         if self._results_card:
             self._results_card.deleteLater()
             self._results_card = None
+
+        if self._unbounded_card:
+            self._unbounded_card.deleteLater()
+            self._unbounded_card = None
+
         self._placeholder_card.show()

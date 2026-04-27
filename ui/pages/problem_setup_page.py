@@ -1,7 +1,5 @@
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea,
-    QSizePolicy, QFrame
-)
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, QFrame)
 from PySide6.QtCore import Signal, Qt
 
 from ui.widgets.config_card import ConfigCard

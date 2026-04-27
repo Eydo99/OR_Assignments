@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QScrollArea,
-    QDoubleSpinBox, QComboBox, QGridLayout, QSizePolicy
-)
+    QDoubleSpinBox, QComboBox, QGridLayout)
 from PySide6.QtCore import Qt, Signal
 
 
