@@ -43,6 +43,7 @@ class SolutionPage(QWidget):
         # ── Results card (hidden by default) ──
         self._results_card = None
         self._unbounded_card = None
+        self._infeasible_card = None
 
         self._layout.addStretch()
 
@@ -98,6 +99,33 @@ class SolutionPage(QWidget):
         self._layout.insertWidget(1, card)
         self._unbounded_card = card
 
+    def show_infeasible(self):
+        self._placeholder_card.hide()
+        card = QFrame()
+        card.setObjectName("PlaceholderCard")
+        card_layout = QVBoxLayout(card)
+        card_layout.setAlignment(Qt.AlignCenter)
+        card_layout.setSpacing(16)
+
+        icon_label = QLabel("🚫")
+        icon_label.setObjectName("IconLabel")
+        icon_label.setAlignment(Qt.AlignCenter)
+        card_layout.addWidget(icon_label)
+
+        msg = QLabel("Infeasible Problem")
+        msg.setObjectName("ErrorMsg")
+        msg.setAlignment(Qt.AlignCenter)
+        card_layout.addWidget(msg)
+
+        sub = QLabel("No feasible solution exists. The constraints are contradictory.")
+        sub.setObjectName("CardSubHint")
+        sub.setAlignment(Qt.AlignCenter)
+        sub.setWordWrap(True)
+        card_layout.addWidget(sub)
+
+        self._layout.insertWidget(1, card)
+        self._infeasible_card = card
+
     # ── Public API (stub – to be wired after solver is implemented) ──
     def show_solution(self, data: dict):
         """Populate the results card from a solution dict.
@@ -150,5 +178,9 @@ class SolutionPage(QWidget):
         if self._unbounded_card:
             self._unbounded_card.deleteLater()
             self._unbounded_card = None
+
+        if self._infeasible_card:
+            self._infeasible_card.deleteLater()
+            self._infeasible_card = None
 
         self._placeholder_card.show()

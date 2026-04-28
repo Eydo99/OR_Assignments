@@ -6,6 +6,7 @@ class TableauMatrix:
     def __init__(self,lp_problem):
         self.lp_problem = lp_problem
         self.initial_basis =[]
+        self.artificial_cols = []
         self.tableau_matrix = None
 
 
@@ -13,25 +14,53 @@ class TableauMatrix:
     def build_tableau_matrix(self):
         constraint_rows=[]
         rhs_col=[]
-        basis_index=len(self.lp_problem.obj_fn_values)
+        original_vars_count = len(self.lp_problem.obj_fn_values)
 
+        total_extra_cols = 0
         for constraint in self.lp_problem.constraints:
+            c_type = constraint.constraint_type
+            if c_type.value == "<=" or c_type.value == "=":
+                total_extra_cols += 1
+            elif c_type.value == ">=":
+                total_extra_cols += 2
+
+        extra_matrix = np.zeros((len(self.lp_problem.constraints), total_extra_cols))
+        current_col_idx = 0
+
+        for i, constraint in enumerate(self.lp_problem.constraints):
             constraint_rows.append(constraint.lhs)
             rhs_col.append(constraint.rhs)
-            self.initial_basis.append(basis_index)
-            basis_index+=1
+            c_type = constraint.constraint_type
+
+            if c_type.value == "<=":
+                extra_matrix[i, current_col_idx] = 1
+                self.initial_basis.append(original_vars_count + current_col_idx)
+                current_col_idx += 1
+
+            elif c_type.value == ">=":
+                extra_matrix[i, current_col_idx] = -1
+                current_col_idx += 1
+
+                extra_matrix[i, current_col_idx] = 1
+                self.initial_basis.append(original_vars_count + current_col_idx)
+                self.artificial_cols.append(original_vars_count + current_col_idx)
+                current_col_idx += 1
+
+            elif c_type.value == "=":
+                extra_matrix[i, current_col_idx] = 1
+                self.initial_basis.append(original_vars_count + current_col_idx)
+                self.artificial_cols.append(original_vars_count + current_col_idx)
+                current_col_idx += 1
 
         self.tableau_matrix=np.array(constraint_rows)
-
-        identity=np.eye(len(self.lp_problem.constraints))
-        self.tableau_matrix=np.hstack([self.tableau_matrix,identity])
+        self.tableau_matrix = np.hstack([self.tableau_matrix, extra_matrix])
 
         z_row=self.lp_problem.obj_fn_values * -1 \
             if self.lp_problem.obj_fn_type==ObjectiveFunctionType.max \
             else self.lp_problem.obj_fn_values
 
-        z_row = np.append(z_row, np.zeros(len(self.lp_problem.constraints)))
-        self.tableau_matrix=np.vstack([self.tableau_matrix,z_row])
+        z_row = np.append(z_row, np.zeros(total_extra_cols))
+        self.tableau_matrix = np.vstack([self.tableau_matrix, z_row])
 
         rhs_col.append(0.0)
         self.tableau_matrix=np.hstack([self.tableau_matrix,np.array(rhs_col).reshape(-1,1)])

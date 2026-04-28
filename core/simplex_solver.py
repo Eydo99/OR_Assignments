@@ -6,6 +6,7 @@ class SimplexSolver:
     def __init__(self,tableau_matrix,lp_problem):
         self.matrix=tableau_matrix.tableau_matrix.copy()
         self.basis=tableau_matrix.initial_basis.copy()
+        self.artificial_cols = tableau_matrix.artificial_cols.copy()
         self.steps=[]
         self.result=None
         self.lp_problem=lp_problem
@@ -17,8 +18,8 @@ class SimplexSolver:
             min_index=np.argmin(z_row[0:len(self.matrix[0])-1])
 
             if z_row[min_index]>=0:
-                self.result="optimal"
-                return self._write_result()
+                return "optimal"
+
 
             else:
                 min_pivot_index=-1
@@ -33,9 +34,49 @@ class SimplexSolver:
                             min_pivot_index=i
 
                 if min_pivot_index==-1 :
-                    self.result="unbounded"
-                    return None
+                    return "unbounded"
                 self._pivot(min_pivot_index,min_index)
+
+
+
+    def phase_1(self):
+        original_Zrow = self.matrix[len(self.matrix)-1].copy()
+        w_row=np.zeros(len(self.matrix[0]))
+        for col in self.artificial_cols:
+            w_row[col]=1
+        for i in range(len(self.matrix) - 1):
+            basic_var = self.basis[i]
+            if basic_var in self.artificial_cols:
+                w_row = w_row - self.matrix[i]
+
+        self.matrix[len(self.matrix)-1]=w_row
+        status = self.simple_solve()
+        optimal_w_value = self.matrix[-1][-1]
+        if optimal_w_value < -1e-7:
+            return "infeasible"
+
+        self.matrix[-1] = original_Zrow
+        return "success"
+
+    def solve(self):
+        if len(self.artificial_cols) > 0:
+            status = self.phase_1()
+            if status == "infeasible":
+                self.result = "infeasible"
+                return None
+
+            self._prepare_z_row_for_phase2()
+
+        self.result = self.simple_solve()
+        if self.result == "unbounded":
+            return None
+        return self._write_result()
+
+    #hany part
+
+    def  _prepare_z_row_for_phase2(self):
+        return
+
 
 
 
@@ -50,6 +91,10 @@ class SimplexSolver:
                 variables_final_value.append(0)
         solution_dict["variables"]=variables_final_value
         optimal_value=self.matrix[len(self.matrix)-1][len(self.matrix[0])-1]
+        # For min problems the Z-row stores positive coefficients,
+        # so the bottom-right cell is -Z*; negate to get the true Z*.
+        if self.lp_problem.obj_fn_type == ObjectiveFunctionType.min:
+            optimal_value = -optimal_value
         solution_dict["optimal_value"]=float(optimal_value)
         return solution_dict
 

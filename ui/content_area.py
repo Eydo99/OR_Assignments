@@ -104,12 +104,13 @@ class ContentArea(QWidget):
             tm.build_tableau_matrix()
             
             print("Initial Basis Indices:", tm.initial_basis)
+            print("Artificial Columns:", tm.artificial_cols)
             print("\nInitial Tableau Matrix:")
             np.set_printoptions(suppress=True, formatter={'float_kind': lambda x: f"{x:.2f}"})
             print(np.round(tm.tableau_matrix, 2))
 
             solver = SimplexSolver(tm, lp_problem)
-            result = solver.simple_solve()
+            result = solver.solve()
             print("Result:", solver.result)
             print("Solution:", result)
             self.solution.reset()
@@ -118,6 +119,8 @@ class ContentArea(QWidget):
                 self.solution.show_solution(result)
             elif solver.result == "unbounded":
                 self.solution.show_unbounded()
+            elif solver.result == "infeasible":
+                self.solution.show_infeasible()
             
         except Exception as e:
             print(f"Error executing core solver logic: {e}")
