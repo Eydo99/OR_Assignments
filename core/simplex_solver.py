@@ -64,7 +64,7 @@ class SimplexSolver:
                 if min_pivot_index==-1 :
                     self._log_step("Problem is unbounded")
                     return "unbounded"
-                self._log_step(f"Pivot → Row {min_pivot_index}, Col {min_index}", pivot_row=min_pivot_index, pivot_col=min_index)
+                self._log_step(f"Pivot → Row {min_pivot_index+1}, Col {min_index+1}", pivot_row=min_pivot_index, pivot_col=min_index)
                 self._pivot(min_pivot_index,min_index)
 
 
