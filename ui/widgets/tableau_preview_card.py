@@ -95,35 +95,113 @@ class TableauPreviewCard(QFrame):
         self.update_data(headers, rows)
 
     def update_from_data(self, num_vars, num_constraints, coeff_data, obj_type):
-        """Live-update the tableau values based on coefficients typed by the user."""
         if not coeff_data or "obj_fn_values" not in coeff_data:
             return self.rebuild_structure(num_vars, num_constraints)
 
         SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
-        
+        constraints = coeff_data["constraints"]
+
+        # Count extra columns needed
+        slack_count = 0
+        artificial_count = 0
+        extra_info = []  # per constraint: (has_slack, has_surplus, has_artificial)
+        for i in range(num_constraints):
+            c_type = constraints[i]["constraint_type"] if i < len(constraints) else "<="
+            if c_type == "<=":
+                extra_info.append(("slack", None))
+                slack_count += 1
+            elif c_type == ">=":
+                extra_info.append(("surplus", "artificial"))
+                slack_count += 1  # surplus
+                artificial_count += 1
+            elif c_type == "=":
+                extra_info.append((None, "artificial"))
+                artificial_count += 1
+
+        # Build headers
         headers = ["Basis"]
-        for i in range(num_vars): headers.append(f"x{i+1}".translate(SUB))
-        for i in range(num_constraints): headers.append(f"s{i+1}".translate(SUB))
+        for i in range(num_vars):
+            headers.append(f"x{i + 1}".translate(SUB))
+        s_idx = 1
+        a_idx = 1
+        col_meta = []  # track column types for identity filling
+        for info in extra_info:
+            if info[0] == "slack":
+                headers.append(f"s{s_idx}".translate(SUB))
+                col_meta.append(("slack", s_idx - 1))
+                s_idx += 1
+            elif info[0] == "surplus":
+                headers.append(f"s{s_idx}".translate(SUB))
+                col_meta.append(("surplus", s_idx - 1))
+                s_idx += 1
+                headers.append(f"a{a_idx}".translate(SUB))
+                col_meta.append(("artificial", a_idx - 1))
+                a_idx += 1
+            elif info[0] is None:
+                headers.append(f"a{a_idx}".translate(SUB))
+                col_meta.append(("artificial", a_idx - 1))
+                a_idx += 1
         headers.append("RHS")
 
-        rows = []
-        # Constraint rows
-        constraints = coeff_data["constraints"]
-        for i in range(num_constraints):
-            row = [f"s{i+1}".translate(SUB)]
-            if i < len(constraints):
-                c = constraints[i]
-                # x variables
-                for x_val in c["LHS"]:
-                    row.append(str(float(x_val)))
-                # slack variables identity matrix
-                for j in range(num_constraints):
-                    row.append("1.0" if i == j else "0.0")
-                # rhs
-                row.append(str(float(c["RHS"])))
+        num_extra_cols = len(col_meta)
+
+        # Build basis labels
+        basis_labels = []
+        for i, info in enumerate(extra_info):
+            if info[0] == "slack":
+                basis_labels.append(f"s{[m for m in col_meta].index(('slack', 0)) + 1}")
             else:
-                num_cols = len(headers)
-                row.extend(["0.0"] * (num_cols - 1))
+                basis_labels.append(f"?")
+
+        # Build rows
+        rows = []
+        extra_col_start = num_vars + 1  # offset in headers (after Basis col)
+
+        for i in range(num_constraints):
+            c_type = constraints[i]["constraint_type"] if i < len(constraints) else "<="
+            if c_type == "<=":
+                row_label = f"s{sum(1 for x in extra_info[:i + 1] if x[0] == 'slack')}".translate(SUB)
+            elif c_type == ">=":
+                a_num = sum(1 for x in extra_info[:i + 1] if x[1] == 'artificial')
+                row_label = f"a{a_num}".translate(SUB)
+            else:
+                a_num = sum(1 for x in extra_info[:i + 1] if x[1] == 'artificial')
+                row_label = f"a{a_num}".translate(SUB)
+
+            row = [row_label]
+
+            # x coefficients
+            lhs = constraints[i]["LHS"] if i < len(constraints) else [0] * num_vars
+            for v in lhs:
+                row.append(str(float(v)))
+
+            # extra columns
+            col_offset = 0
+            for info in extra_info[:i]:
+                if info[0] == "slack":
+                    col_offset += 1
+                elif info[0] == "surplus":
+                    col_offset += 2
+                elif info[0] is None:
+                    col_offset += 1
+
+            for j, meta in enumerate(col_meta):
+                kind = meta[0]
+                if c_type == "<=":
+                    row.append("1.0" if (kind == "slack" and j == col_offset) else "0.0")
+                elif c_type == ">=":
+                    if kind == "surplus" and j == col_offset:
+                        row.append("-1.0")
+                    elif kind == "artificial" and j == col_offset + 1:
+                        row.append("1.0")
+                    else:
+                        row.append("0.0")
+                elif c_type == "=":
+                    row.append("1.0" if (kind == "artificial" and j == col_offset) else "0.0")
+
+            # RHS
+            rhs = constraints[i]["RHS"] if i < len(constraints) else 0
+            row.append(str(float(rhs)))
             rows.append(row)
 
         # Z row
@@ -131,16 +209,10 @@ class TableauPreviewCard(QFrame):
         obj_vals = coeff_data["obj_fn_values"]
         is_max = "max" in obj_type.lower()
         for v in obj_vals:
-            val = float(v)
-            z_row.append(str(-val) if is_max else str(val))
-        
-        # Slack vars in Z row are 0
-        for i in range(num_constraints):
+            z_row.append(str(-float(v)) if is_max else str(float(v)))
+        for _ in col_meta:
             z_row.append("0.0")
-        
-        # Z RHS
         z_row.append("0.0")
-        
         rows.append(z_row)
 
         self.update_data(headers, rows)

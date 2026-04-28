@@ -1,3 +1,5 @@
+from typing import Self
+
 import numpy as np
 from utils.enums.obj_fn_type import ObjectiveFunctionType
 
@@ -11,6 +13,23 @@ class SimplexSolver:
         self.result=None
         self.lp_problem=lp_problem
 
+
+    def solve(self):
+        if len(self.artificial_cols) > 0:
+            status = self._phase_1()
+            if status == "infeasible":
+                self.result = "infeasible"
+                return None
+            else:
+                return self._prepare_z_row_for_phase2()
+
+        else:
+            self.result = self._simple_solve()
+            if self.result == "unbounded":
+                return None
+            return self._write_result()
+
+
     def _log_step(self, message="", pivot_row=None, pivot_col=None):
         step_data = {
             "message": message,
@@ -22,16 +41,14 @@ class SimplexSolver:
         self.steps.append(step_data)
 
 
-    def simple_solve(self):
-        while(True):
+    def _simple_solve(self):
+        while True:
             z_row=self.matrix[len(self.matrix)-1]
             min_index=np.argmin(z_row[0:len(self.matrix[0])-1])
 
             if z_row[min_index]>=0:
                 self._log_step("Optimal solution reached")
                 return "optimal"
-
-
             else:
                 min_pivot_index=-1
                 min_current=100000
@@ -52,7 +69,7 @@ class SimplexSolver:
 
 
 
-    def phase_1(self):
+    def _phase_1(self):
         self._log_step("Phase 1 — Starting (minimize artificial variables)")
         original_Zrow = self.matrix[len(self.matrix)-1].copy()
         w_row=np.zeros(len(self.matrix[0]))
@@ -65,7 +82,7 @@ class SimplexSolver:
 
         self.matrix[len(self.matrix)-1]=w_row
         self._log_step("Phase 1 — W-row constructed")
-        status = self.simple_solve()
+        self._simple_solve()
         optimal_w_value = self.matrix[-1][-1]
         if optimal_w_value < -1e-7:
             self._log_step("Phase 1 — Infeasible (W* != 0)")
@@ -75,26 +92,10 @@ class SimplexSolver:
         self.matrix[-1] = original_Zrow
         return "success"
 
-    def solve(self):
-        if len(self.artificial_cols) > 0:
-            status = self.phase_1()
-            if status == "infeasible":
-                self.result = "infeasible"
-                return None
-
-            self._prepare_z_row_for_phase2()
-
-        self.result = self.simple_solve()
-        if self.result == "unbounded":
-            return None
-        return self._write_result()
 
     #hany part
-
     def  _prepare_z_row_for_phase2(self):
         return
-
-
 
 
     def _write_result(self):
@@ -114,6 +115,7 @@ class SimplexSolver:
             optimal_value = -optimal_value
         solution_dict["optimal_value"]=float(optimal_value)
         return solution_dict
+
 
     def _pivot(self,pivot_row,pivot_column):
         self.matrix[pivot_row]=self.matrix[pivot_row]/self.matrix[pivot_row][pivot_column]
