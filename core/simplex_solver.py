@@ -11,6 +11,16 @@ class SimplexSolver:
         self.result=None
         self.lp_problem=lp_problem
 
+    def _log_step(self, message="", pivot_row=None, pivot_col=None):
+        step_data = {
+            "message": message,
+            "matrix": self.matrix.copy(),
+            "basis": self.basis.copy(),
+            "pivot_row": pivot_row,
+            "pivot_col": pivot_col
+        }
+        self.steps.append(step_data)
+
 
     def simple_solve(self):
         while(True):
@@ -18,6 +28,7 @@ class SimplexSolver:
             min_index=np.argmin(z_row[0:len(self.matrix[0])-1])
 
             if z_row[min_index]>=0:
+                self._log_step("Optimal solution reached")
                 return "optimal"
 
 
@@ -34,12 +45,15 @@ class SimplexSolver:
                             min_pivot_index=i
 
                 if min_pivot_index==-1 :
+                    self._log_step("Problem is unbounded")
                     return "unbounded"
+                self._log_step(f"Pivot → Row {min_pivot_index}, Col {min_index}", pivot_row=min_pivot_index, pivot_col=min_index)
                 self._pivot(min_pivot_index,min_index)
 
 
 
     def phase_1(self):
+        self._log_step("Phase 1 — Starting (minimize artificial variables)")
         original_Zrow = self.matrix[len(self.matrix)-1].copy()
         w_row=np.zeros(len(self.matrix[0]))
         for col in self.artificial_cols:
@@ -50,11 +64,14 @@ class SimplexSolver:
                 w_row = w_row - self.matrix[i]
 
         self.matrix[len(self.matrix)-1]=w_row
+        self._log_step("Phase 1 — W-row constructed")
         status = self.simple_solve()
         optimal_w_value = self.matrix[-1][-1]
         if optimal_w_value < -1e-7:
+            self._log_step("Phase 1 — Infeasible (W* != 0)")
             return "infeasible"
 
+        self._log_step("Phase 1 — Feasible solution found, restoring Z-row")
         self.matrix[-1] = original_Zrow
         return "success"
 

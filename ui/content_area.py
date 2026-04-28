@@ -114,6 +114,7 @@ class ContentArea(QWidget):
             print("Result:", solver.result)
             print("Solution:", result)
             self.solution.reset()
+            self.tableau_steps.reset()
             self.set_page(2)
             if solver.result == "optimal":
                 self.solution.show_solution(result)
@@ -121,6 +122,11 @@ class ContentArea(QWidget):
                 self.solution.show_unbounded()
             elif solver.result == "infeasible":
                 self.solution.show_infeasible()
+
+            # Show step-by-step tableau iterations
+            if solver.steps:
+                num_vars = len(lp_problem.obj_fn_values)
+                self.tableau_steps.show_steps(solver.steps, num_vars)
             
         except Exception as e:
             print(f"Error executing core solver logic: {e}")
