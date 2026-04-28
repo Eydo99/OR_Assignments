@@ -24,7 +24,7 @@ class ContentArea(QWidget):
         layout.setSpacing(0)
 
         self.stack = QStackedWidget()
-        self.stack.setStyleSheet("background: transparent;")
+        self.stack.setObjectName("TransparentWidget")
         layout.addWidget(self.stack)
 
         # ── Pages ──

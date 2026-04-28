@@ -10,22 +10,8 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("LP Problems Solver")
         self.setMinimumSize(1100, 750)
 
-        # ── Global palette for the app ──
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #111827;
-            }
-            QToolTip {
-                background-color: #16213e;
-                color: #e2e8f0;
-                border: 1px solid #1a4a8a;
-                padding: 4px 8px;
-                font-size: 12px;
-            }
-        """)
-
         central_widget = QWidget()
-        central_widget.setStyleSheet("background-color: #111827;")
+        central_widget.setObjectName("CentralWidget")
         central_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setCentralWidget(central_widget)
 

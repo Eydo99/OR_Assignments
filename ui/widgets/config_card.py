@@ -7,69 +7,13 @@ class ConfigCard(QFrame):
 
     def __init__(self):
         super().__init__()
-        self.setStyleSheet("""
-            QFrame {
-                background-color: #16213e;
-                border: 1px solid #0f3460;
-                border-radius: 10px;
-                padding: 8px;
-            }
-            QLabel {
-                color: #cbd5e0;
-                font-size: 13px;
-                border: none;
-                background: transparent;
-            }
-            QComboBox, QSpinBox {
-                background-color: #0f3460;
-                color: #e2e8f0;
-                border: 1px solid #1a4a8a;
-                border-radius: 6px;
-                padding: 5px 10px;
-                font-size: 12px;
-            }
-            QComboBox:focus, QSpinBox:focus {
-                border: 1px solid #4f9cf9;
-            }
-            QComboBox::drop-down {
-                border: none;
-                background-color: #0f3460;
-            }
-            QComboBox::down-arrow {
-                width: 10px;
-                height: 10px;
-            }
-            QComboBox QAbstractItemView {
-                background-color: #16213e;
-                color: #e2e8f0;
-                selection-background-color: #0f3460;
-                border: 1px solid #1a4a8a;
-            }
-            QSpinBox::up-button, QSpinBox::down-button {
-                background-color: #1a4a8a;
-                border: none;
-                width: 16px;
-            }
-            QSpinBox::up-button:hover, QSpinBox::down-button:hover {
-                background-color: #4f9cf9;
-            }
-            QSpinBox {
-                selection-background-color: #1a4a8a;
-                selection-color: #e2e8f0;
-            }
-        """)
+        self.setObjectName("CardFrame")
 
         layout = QVBoxLayout(self)
         layout.setSpacing(14)
 
         title = QLabel("Configuration")
-        title.setStyleSheet("""
-            color: #e2e8f0;
-            font-size: 14px;
-            font-weight: 600;
-            border: none;
-            background: transparent;
-        """)
+        title.setObjectName("CardTitle")
         layout.addWidget(title)
 
         self.obj_combo = self._make_combo(["Maximize", "Minimize"])
@@ -83,6 +27,7 @@ class ConfigCard(QFrame):
         ]:
             row = QHBoxLayout()
             label = QLabel(label_text)
+            label.setObjectName("StandardLabel")
             label.setFixedWidth(130)
             row.addWidget(label)
             row.addWidget(widget)

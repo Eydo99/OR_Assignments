@@ -21,22 +21,10 @@ class TableauStepsPage(QWidget):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.NoFrame)
-        scroll.setStyleSheet("""
-            QScrollArea { background: transparent; border: none; }
-            QScrollBar:vertical {
-                background: #0d1b2a; width: 8px; border: none;
-            }
-            QScrollBar::handle:vertical {
-                background: #1a4a8a; border-radius: 4px; min-height: 30px;
-            }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-                height: 0px;
-            }
-        """)
         outer.addWidget(scroll)
 
         container = QWidget()
-        container.setStyleSheet("background: transparent;")
+        container.setObjectName("TransparentWidget")
         scroll.setWidget(container)
 
         self._layout = QVBoxLayout(container)
@@ -45,12 +33,7 @@ class TableauStepsPage(QWidget):
 
         # ── Section header ──
         header = QLabel("TABLEAU STEPS")
-        header.setStyleSheet("""
-            color: #4f9cf9;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 2.5px;
-        """)
+        header.setObjectName("SectionHeader")
         self._layout.addWidget(header)
 
         # ── Placeholder card ──
@@ -59,7 +42,7 @@ class TableauStepsPage(QWidget):
 
         # ── Step cards container ──
         self._steps_container = QWidget()
-        self._steps_container.setStyleSheet("background: transparent;")
+        self._steps_container.setObjectName("StepsContainer")
         self._steps_layout = QVBoxLayout(self._steps_container)
         self._steps_layout.setContentsMargins(0, 0, 0, 0)
         self._steps_layout.setSpacing(16)
@@ -70,41 +53,23 @@ class TableauStepsPage(QWidget):
 
     def _build_placeholder(self):
         card = QFrame()
-        card.setStyleSheet("""
-            QFrame {
-                background-color: #16213e;
-                border: 1px solid #0f3460;
-                border-radius: 10px;
-                padding: 40px;
-            }
-        """)
+        card.setObjectName("PlaceholderCard")
         card_layout = QVBoxLayout(card)
         card_layout.setAlignment(Qt.AlignCenter)
         card_layout.setSpacing(16)
 
         icon_label = QLabel("📋")
-        icon_label.setStyleSheet("font-size: 40px; border: none; background: transparent;")
+        icon_label.setObjectName("IconLabel")
         icon_label.setAlignment(Qt.AlignCenter)
         card_layout.addWidget(icon_label)
 
         msg = QLabel("No tableau steps yet")
-        msg.setStyleSheet("""
-            color: #e2e8f0;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            background: transparent;
-        """)
+        msg.setObjectName("PlaceholderMsg")
         msg.setAlignment(Qt.AlignCenter)
         card_layout.addWidget(msg)
 
         sub = QLabel("Tableau iterations will appear here step-by-step after you solve a problem.")
-        sub.setStyleSheet("""
-            color: #718096;
-            font-size: 12px;
-            border: none;
-            background: transparent;
-        """)
+        sub.setObjectName("CardSubHint")
         sub.setAlignment(Qt.AlignCenter)
         sub.setWordWrap(True)
         card_layout.addWidget(sub)
@@ -130,35 +95,17 @@ class TableauStepsPage(QWidget):
 
     def _build_step_card(self, step):
         card = QFrame()
-        card.setStyleSheet("""
-            QFrame {
-                background-color: #16213e;
-                border: 1px solid #0f3460;
-                border-radius: 10px;
-                padding: 16px;
-            }
-        """)
+        card.setObjectName("StepCard")
         card_layout = QVBoxLayout(card)
         card_layout.setSpacing(10)
 
         iteration = step.get("iteration", "?")
         title = QLabel(f"Iteration {iteration}")
-        title.setStyleSheet("""
-            color: #4f9cf9;
-            font-size: 13px;
-            font-weight: 600;
-            border: none;
-            background: transparent;
-        """)
+        title.setObjectName("StepTitle")
         card_layout.addWidget(title)
 
         info = QLabel("Tableau data will be rendered here.")
-        info.setStyleSheet("""
-            color: #718096;
-            font-size: 12px;
-            border: none;
-            background: transparent;
-        """)
+        info.setObjectName("CardSubHint")
         card_layout.addWidget(info)
 
         return card

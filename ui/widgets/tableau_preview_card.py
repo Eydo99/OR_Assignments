@@ -8,26 +8,13 @@ class TableauPreviewCard(QFrame):
 
     def __init__(self):
         super().__init__()
-        self.setStyleSheet("""
-            QFrame {
-                background-color: #16213e;
-                border: 1px solid #0f3460;
-                border-radius: 10px;
-                padding: 8px;
-            }
-        """)
+        self.setObjectName("CardFrame")
 
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
 
         title = QLabel("Tableau preview")
-        title.setStyleSheet("""
-            color: #e2e8f0;
-            font-size: 14px;
-            font-weight: 600;
-            border: none;
-            background: transparent;
-        """)
+        title.setObjectName("CardTitle")
         layout.addWidget(title)
 
         self.table = QTableWidget(3, 7)
@@ -40,43 +27,11 @@ class TableauPreviewCard(QFrame):
         layout.addWidget(self.table)
 
         hint = QLabel("Pivot cell highlighted in green")
-        hint.setStyleSheet("""
-            color: #4a5568;
-            font-size: 11px;
-            border: none;
-            background: transparent;
-        """)
+        hint.setObjectName("CardHint")
         layout.addWidget(hint)
 
     def _setup_table(self):
-        self.table.setStyleSheet("""
-            QTableWidget {
-                background-color: #0f3460;
-                color: #e2e8f0;
-                border: none;
-                font-size: 13px;
-                gridline-color: #1a4a8a;
-            }
-            QTableWidget::item {
-                padding: 6px;
-            }
-            QTableWidget::item:selected {
-                background-color: #1a4a8a;
-            }
-        """)
-
-        # Apply header style directly on the header widget so it renders correctly
-        self.table.horizontalHeader().setStyleSheet("""
-            QHeaderView::section {
-                background-color: #0d2948;
-                color: #4f9cf9;
-                padding: 6px 4px;
-                border: none;
-                border-bottom: 2px solid #1a4a8a;
-                font-size: 12px;
-                font-weight: 700;
-            }
-        """)
+        pass
 
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table.horizontalHeader().setMinimumHeight(36)

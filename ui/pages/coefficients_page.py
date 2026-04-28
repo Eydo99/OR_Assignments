@@ -4,67 +4,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 
 
-# ── Shared stylesheet tokens ──
-CARD_STYLE = """
-    QFrame#coeffCard {
-        background-color: #16213e;
-        border: 1px solid #0f3460;
-        border-radius: 10px;
-        padding: 8px;
-    }
-"""
 
-LABEL_STYLE = "color: #e2e8f0; font-size: 13px; border: none; background: transparent;"
-TITLE_STYLE = "color: #e2e8f0; font-size: 14px; font-weight: 600; border: none; background: transparent;"
-HINT_STYLE = "color: #4a5568; font-size: 11px; border: none; background: transparent;"
-
-SPINBOX_STYLE = """
-    QDoubleSpinBox {
-        background-color: #0f3460;
-        color: #e2e8f0;
-        border: 1px solid #1a4a8a;
-        border-radius: 6px;
-        padding: 5px 8px;
-        font-size: 12px;
-        min-width: 65px;
-    }
-    QDoubleSpinBox:focus {
-        border: 1px solid #4f9cf9;
-    }
-    QDoubleSpinBox::up-button, QDoubleSpinBox::down-button {
-        background-color: #1a4a8a;
-        border: none;
-        width: 16px;
-    }
-    QDoubleSpinBox::up-button:hover, QDoubleSpinBox::down-button:hover {
-        background-color: #4f9cf9;
-    }
-"""
-
-COMBO_STYLE = """
-    QComboBox {
-        background-color: #0f3460;
-        color: #e2e8f0;
-        border: 1px solid #1a4a8a;
-        border-radius: 6px;
-        padding: 5px 8px;
-        font-size: 12px;
-        min-width: 55px;
-    }
-    QComboBox:focus {
-        border: 1px solid #4f9cf9;
-    }
-    QComboBox::drop-down {
-        border: none;
-        background-color: #0f3460;
-    }
-    QComboBox QAbstractItemView {
-        background-color: #16213e;
-        color: #e2e8f0;
-        selection-background-color: #0f3460;
-        border: 1px solid #1a4a8a;
-    }
-"""
 
 
 class CoefficientsPage(QWidget):
@@ -84,22 +24,10 @@ class CoefficientsPage(QWidget):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.NoFrame)
-        scroll.setStyleSheet("""
-            QScrollArea { background: transparent; border: none; }
-            QScrollBar:vertical {
-                background: #0d1b2a; width: 8px; border: none;
-            }
-            QScrollBar::handle:vertical {
-                background: #1a4a8a; border-radius: 4px; min-height: 30px;
-            }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-                height: 0px;
-            }
-        """)
         outer.addWidget(scroll)
 
         self._container = QWidget()
-        self._container.setStyleSheet("background: transparent;")
+        self._container.setObjectName("TransparentWidget")
         scroll.setWidget(self._container)
 
         self._layout = QVBoxLayout(self._container)
@@ -108,12 +36,7 @@ class CoefficientsPage(QWidget):
 
         # ── Section header (matches Problem Setup / Solution style) ──
         header = QLabel("COEFFICIENTS")
-        header.setStyleSheet("""
-            color: #4f9cf9;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 2px;
-        """)
+        header.setObjectName("SectionHeader")
         self._layout.addWidget(header)
 
         # Placeholders for cards
@@ -196,35 +119,32 @@ class CoefficientsPage(QWidget):
         spin.setRange(-9999, 9999)
         spin.setDecimals(2)
         spin.setValue(0)
-        spin.setStyleSheet(SPINBOX_STYLE)
         return spin
 
     def _make_combo(self):
         combo = QComboBox()
         combo.addItems(["<=", ">=", "="])
-        combo.setStyleSheet(COMBO_STYLE)
         return combo
 
     def _build_obj_card(self):
         card = QFrame()
-        card.setObjectName("coeffCard")
-        card.setStyleSheet(CARD_STYLE)
+        card.setObjectName("CardFrame")
         card_layout = QVBoxLayout(card)
         card_layout.setSpacing(14)
 
         title = QLabel("Objective Function Coefficients")
-        title.setStyleSheet(TITLE_STYLE)
+        title.setObjectName("CardTitle")
         card_layout.addWidget(title)
 
         hint = QLabel("Enter the coefficients for Z = c₁x₁ + c₂x₂ + …")
-        hint.setStyleSheet(HINT_STYLE)
+        hint.setObjectName("CardHint")
         card_layout.addWidget(hint)
 
         row = QHBoxLayout()
         row.setSpacing(12)
         for i in range(self._num_vars):
             lbl = QLabel(f"x<sub>{i + 1}</sub>")
-            lbl.setStyleSheet(LABEL_STYLE)
+            lbl.setObjectName("StandardLabel")
             lbl.setAlignment(Qt.AlignCenter)
             col = QVBoxLayout()
             col.setSpacing(4)
@@ -242,17 +162,16 @@ class CoefficientsPage(QWidget):
 
     def _build_constraints_card(self):
         card = QFrame()
-        card.setObjectName("coeffCard")
-        card.setStyleSheet(CARD_STYLE)
+        card.setObjectName("CardFrame")
         card_layout = QVBoxLayout(card)
         card_layout.setSpacing(14)
 
         title = QLabel("Constraint Coefficients")
-        title.setStyleSheet(TITLE_STYLE)
+        title.setObjectName("CardTitle")
         card_layout.addWidget(title)
 
         hint = QLabel("Enter coefficients for each constraint row, select type, and RHS value")
-        hint.setStyleSheet(HINT_STYLE)
+        hint.setObjectName("CardHint")
         card_layout.addWidget(hint)
 
         # ── Header labels ──
@@ -260,18 +179,17 @@ class CoefficientsPage(QWidget):
         grid.setSpacing(8)
 
         # Header row
-        header_style = "color: #4f9cf9; font-size: 11px; font-weight: 600; border: none; background: transparent;"
         for j in range(self._num_vars):
             h = QLabel(f"x<sub>{j + 1}</sub>")
-            h.setStyleSheet(header_style)
+            h.setObjectName("GridHeader")
             h.setAlignment(Qt.AlignCenter)
             grid.addWidget(h, 0, j)
         type_h = QLabel("Type")
-        type_h.setStyleSheet(header_style)
+        type_h.setObjectName("GridHeader")
         type_h.setAlignment(Qt.AlignCenter)
         grid.addWidget(type_h, 0, self._num_vars)
         rhs_h = QLabel("RHS")
-        rhs_h.setStyleSheet(header_style)
+        rhs_h.setObjectName("GridHeader")
         rhs_h.setAlignment(Qt.AlignCenter)
         grid.addWidget(rhs_h, 0, self._num_vars + 1)
 

@@ -8,36 +8,6 @@ class Sidebar(QWidget):
 
     section_changed = Signal(int)
 
-    ACTIVE_STYLE = """
-        QPushButton {
-            background-color: rgba(15, 52, 96, 0.6);
-            color: #ffffff;
-            border: none;
-            border-left: 3px solid #4f9cf9;
-            padding: 14px 18px 14px 15px;
-            text-align: left;
-            font-size: 13px;
-            font-weight: 600;
-        }
-    """
-
-    INACTIVE_STYLE = """
-        QPushButton {
-            background-color: transparent;
-            color: #718096;
-            border: none;
-            border-left: 3px solid transparent;
-            padding: 14px 18px 14px 15px;
-            text-align: left;
-            font-size: 13px;
-            font-weight: 400;
-        }
-        QPushButton:hover {
-            background-color: rgba(15, 52, 96, 0.35);
-            color: #cbd5e0;
-        }
-    """
-
     def __init__(self):
         super().__init__()
         self.setFixedWidth(220)
@@ -54,24 +24,19 @@ class Sidebar(QWidget):
         # ── App title area ──
         title_container = QWidget()
         title_container.setFixedHeight(60)
-        title_container.setStyleSheet("background: transparent;")
+        title_container.setObjectName("TitleContainer")
         title_layout = QVBoxLayout(title_container)
         title_layout.setContentsMargins(18, 16, 18, 8)
 
         app_title = QLabel("LP Solver")
-        app_title.setStyleSheet("""
-            color: #4f9cf9;
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        """)
+        app_title.setObjectName("AppTitle")
         title_layout.addWidget(app_title)
         layout.addWidget(title_container)
 
         # ── Separator ──
         sep = QWidget()
         sep.setFixedHeight(1)
-        sep.setStyleSheet("background-color: #1a3050;")
+        sep.setObjectName("Separator")
         layout.addWidget(sep)
 
         # ── Navigation buttons ──
@@ -85,6 +50,7 @@ class Sidebar(QWidget):
 
         for idx, (display_text, _label) in enumerate(items):
             btn = QPushButton(display_text)
+            btn.setObjectName("SidebarBtn")
             btn.setMinimumHeight(44)
             btn.setCursor(Qt.PointingHandCursor)
             btn.clicked.connect(lambda checked, i=idx: self._on_button_clicked(i))
@@ -95,12 +61,7 @@ class Sidebar(QWidget):
 
         # ── Footer label ──
         footer = QLabel("Operations Research")
-        footer.setStyleSheet("""
-            color: #4a5568;
-            font-size: 10px;
-            padding: 12px 18px;
-            letter-spacing: 1px;
-        """)
+        footer.setObjectName("FooterLabel")
         layout.addWidget(footer)
 
         # Set first button active by default
@@ -113,7 +74,7 @@ class Sidebar(QWidget):
     def set_active(self, index):
         """Highlight the button at `index` and dim the rest."""
         for i, btn in enumerate(self.buttons):
-            if i == index:
-                btn.setStyleSheet(self.ACTIVE_STYLE)
-            else:
-                btn.setStyleSheet(self.INACTIVE_STYLE)
+            is_active = (i == index)
+            btn.setProperty("active", is_active)
+            btn.style().unpolish(btn)
+            btn.style().polish(btn)
