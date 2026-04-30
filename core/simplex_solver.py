@@ -265,8 +265,8 @@ class SimplexSolver:
 
         optimal_value = float(self.matrix[-1][-1])
 
-        # if self.lp_problem.obj_fn_type == ObjectiveFunctionType.min and optimal_value != 0:
-        #     optimal_value = -optimal_value
+        if self.lp_problem.obj_fn_type == ObjectiveFunctionType.min and optimal_value != 0:
+            optimal_value = -optimal_value
 
         solution_dict["optimal_value"] = optimal_value
         return solution_dict
