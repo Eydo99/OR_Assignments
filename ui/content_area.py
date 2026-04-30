@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QStackedWidget
 from PySide6.QtGui import QColor
+from PySide6.QtCore import Signal
 
 from ui.pages.problem_setup_page import ProblemSetupPage
 from ui.pages.coefficients_page import CoefficientsPage
@@ -10,6 +11,9 @@ from core.simplex_solver import SimplexSolver
 
 class ContentArea(QWidget):
     """Central area that hosts a QStackedWidget with the four section pages."""
+
+    # Emitted whenever the visible page changes so the sidebar can sync
+    page_changed = Signal(int)
 
     def __init__(self):
         super().__init__()
@@ -33,10 +37,10 @@ class ContentArea(QWidget):
         self.solution = SolutionPage()
         self.tableau_steps = TableauStepsPage()
 
-        self.stack.addWidget(self.problem_setup)      # index 0
-        self.stack.addWidget(self.coefficients)        # index 1
-        self.stack.addWidget(self.solution)            # index 2
-        self.stack.addWidget(self.tableau_steps)       # index 3
+        self.stack.addWidget(self.problem_setup)   # index 0
+        self.stack.addWidget(self.coefficients)     # index 1
+        self.stack.addWidget(self.solution)         # index 2
+        self.stack.addWidget(self.tableau_steps)    # index 3
 
         # ── Wire variable / constraint changes → coefficients page ──
         self.problem_setup.variables_changed.connect(self._rebuild_coefficients)
@@ -48,13 +52,20 @@ class ContentArea(QWidget):
         # ── Wire reset across pages ──
         self.problem_setup.reset_requested.connect(self._on_reset)
 
-        # ── Wire solve (stub – prints data dict) ──
+        # ── Wire solve ──
         self.problem_setup.solve_requested.connect(self._on_solve)
 
     # ── Public API ──
     def set_page(self, index: int):
         if 0 <= index < self.stack.count():
             self.stack.setCurrentIndex(index)
+            # No signal here — caller is the sidebar itself, avoid loops
+
+    def navigate_to(self, index: int):
+        """Navigate programmatically (e.g. from solver) and notify sidebar."""
+        if 0 <= index < self.stack.count():
+            self.stack.setCurrentIndex(index)
+            self.page_changed.emit(index)
 
     # ── Internal slots ──
     def _rebuild_coefficients(self, num_vars):
@@ -75,7 +86,7 @@ class ContentArea(QWidget):
         self.tableau_steps.reset()
 
     def _on_solve(self):
-        """Pass data to the core Parser and TableauMatrix to verify integration."""
+        """Pass data to the core Parser and TableauMatrix, then show results."""
         coeff_data = self.coefficients.get_data()
         data = {
             "obj_fn_type": self.problem_setup.get_objective_type(),
@@ -83,26 +94,24 @@ class ContentArea(QWidget):
             "constraints": coeff_data["constraints"],
             "restrictions": self.problem_setup.get_restrictions(),
         }
-        
+
         print("─" * 50)
         print("SOLVE requested with data:")
         for k, v in data.items():
             print(f"  {k}: {v}")
-            
+
         print("\n--- CORE SOLVER LOGIC OUTPUT ---")
         try:
             from core.parser import Parser
             from core.tableau_matrix import TableauMatrix
             import numpy as np
-            
-            # 1. Parse UI data into LPProblem
+
             parser = Parser(data)
             lp_problem = parser.build_lp_problem()
-            
-            # 2. Build initial TableauMatrix
+
             tm = TableauMatrix(lp_problem)
             tm.build_tableau_matrix()
-            
+
             print("Initial Basis Indices:", tm.initial_basis)
             print("Artificial Columns:", tm.artificial_cols)
             print("\nInitial Tableau Matrix:")
@@ -113,9 +122,13 @@ class ContentArea(QWidget):
             result = solver.solve()
             print("Result:", solver.result)
             print("Solution:", result)
+
             self.solution.reset()
             self.tableau_steps.reset()
-            self.set_page(2)
+
+            # Navigate to solution page AND sync the sidebar highlight
+            self.navigate_to(2)
+
             if solver.result == "optimal":
                 self.solution.show_solution(result)
             elif solver.result == "unbounded":
@@ -123,14 +136,13 @@ class ContentArea(QWidget):
             elif solver.result == "infeasible":
                 self.solution.show_infeasible()
 
-            # Show step-by-step tableau iterations
             if solver.steps:
                 num_vars = len(lp_problem.obj_fn_values)
                 self.tableau_steps.show_steps(solver.steps, num_vars)
-            
+
         except Exception as e:
             print(f"Error executing core solver logic: {e}")
             import traceback
             traceback.print_exc()
-            
+
         print("─" * 50)

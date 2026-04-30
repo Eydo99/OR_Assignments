@@ -27,8 +27,11 @@ class MainWindow(QMainWindow):
         self.content = ContentArea()
         self.main_layout.addWidget(self.content)
 
-        # ── Wire sidebar → content page switching ──
+        # ── Sidebar → content page switching (user clicks sidebar) ──
         self.sidebar.section_changed.connect(self.content.set_page)
+
+        # ── Content → sidebar sync (solver auto-navigates to solution page) ──
+        self.content.page_changed.connect(self.sidebar.set_active)
 
 
 if __name__ == "__main__":
