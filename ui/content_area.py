@@ -95,7 +95,7 @@ class ContentArea(QWidget):
             "restrictions": self.problem_setup.get_restrictions(),
         }
 
-        print("─" * 50)
+        print("-" * 50)
         print("SOLVE requested with data:")
         for k, v in data.items():
             print(f"  {k}: {v}")
@@ -145,4 +145,4 @@ class ContentArea(QWidget):
             import traceback
             traceback.print_exc()
 
-        print("─" * 50)
+        print("-" * 50)

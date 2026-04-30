@@ -26,6 +26,7 @@ class SimplexSolver:
             return self._write_result()
 
     def _phase_1(self):
+        self.is_phase_1 = False
         self._log_step("Phase 1 — Starting (minimize artificial variables)")
 
         original_z_row = self.matrix[-1].copy()
@@ -34,12 +35,16 @@ class SimplexSolver:
         for col in self.artificial_cols:
             w_row[col] = 1
 
+        self.matrix[-1] = w_row
+        self.is_phase_1 = True
+        self._log_step("Phase 1 — Objective changed from Z to W (sum of artificial variables)")
+
         for i in range(len(self.matrix) - 1):
             if self.basis[i] in self.artificial_cols:
                 w_row = w_row - self.matrix[i]
 
         self.matrix[-1] = w_row
-        self._log_step("Phase 1 — W-row constructed, launching simplex on W")
+        self._log_step("Phase 1 — W-row made canonical, launching simplex on W")
 
         self._simple_solve()
 
@@ -50,8 +55,9 @@ class SimplexSolver:
 
         self._basis_fault_checker()
 
-        self._log_step("Phase 1 — Feasible BFS found, restoring original Z-row")
+        self.is_phase_1 = False
         self.matrix[-1] = original_z_row
+        self._log_step("Phase 1 — Feasible BFS found, restoring original Z-row")
         return "success"
 
     def _basis_fault_checker(self):
@@ -131,9 +137,11 @@ class SimplexSolver:
             if col in old_to_new
         }
 
+        self.artificial_cols = type(self.artificial_cols)()
+
         self._log_step(
             f"Phase 2 — Artificial columns removed. "
-            f"Tableau is now {self.matrix.shape[1]} x {self.matrix.shape[1]}"
+            f"Tableau is now {self.matrix.shape[0]} x {self.matrix.shape[1]}"
         )
 
         z_row = np.zeros(self.matrix.shape[1])
@@ -187,6 +195,8 @@ class SimplexSolver:
             "basis": self.basis.copy(),
             "pivot_row": pivot_row,
             "pivot_col": pivot_col,
+            "is_phase_1": getattr(self, "is_phase_1", False),
+            "artificial_cols": self.artificial_cols.copy(),
         })
 
     def _simple_solve(self):

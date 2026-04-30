@@ -126,7 +126,7 @@ class TableauStepsPage(QWidget):
             # Build per-step column headers based on actual matrix width
             headers = ["Basis"]
             for c in range(num_data_cols):
-                headers.append(self._col_name_for_step(c, num_data_cols))
+                headers.append(self._col_name_for_step(c, num_data_cols, step))
             headers.append("RHS")
             table.setHorizontalHeaderLabels(headers)
 
@@ -137,11 +137,13 @@ class TableauStepsPage(QWidget):
             for r in range(num_rows - 1):
                 if r < len(basis):
                     row_labels.append(
-                        self._col_name_for_step(int(basis[r]), num_data_cols)
+                        self._col_name_for_step(int(basis[r]), num_data_cols, step)
                     )
                 else:
                     row_labels.append(f"R{r}")
-            row_labels.append("Z")
+            
+            is_phase_1 = step.get("is_phase_1", False)
+            row_labels.append("W" if is_phase_1 else "Z")
 
             is_z_row = lambda r: r == num_rows - 1
             basis_col_set = set(int(b) for b in basis) if basis else set()
@@ -216,7 +218,7 @@ class TableauStepsPage(QWidget):
             return str(int(round(val)))
         return f"{val:.4f}"
 
-    def _col_name_for_step(self, col_index: int, num_data_cols: int) -> str:
+    def _col_name_for_step(self, col_index: int, num_data_cols: int, step: dict = None) -> str:
         """
         Generate a readable column name based on the actual matrix width for
         this specific step. This correctly handles both Phase 1 (which includes
@@ -224,12 +226,22 @@ class TableauStepsPage(QWidget):
 
         Layout of data columns (0-indexed, excluding RHS):
           0 .. num_vars-1          → x1, x2, ...
-          num_vars .. num_data_cols-1 → s1, s2, ... (slack / surplus / artificial)
+          num_vars .. num_data_cols-1 → s1, s2, ... (slack / surplus)
+          artificial columns       → a1, a2, ...
         """
         if col_index < self._num_vars:
             return f"x{col_index + 1}"
+            
+        artificial_cols = step.get("artificial_cols", set()) if step else set()
+        
+        if col_index in artificial_cols:
+            sorted_art_cols = sorted(list(artificial_cols))
+            a_idx = sorted_art_cols.index(col_index) + 1
+            return f"a{a_idx}"
         else:
-            return f"s{col_index - self._num_vars + 1}"
+            num_art_before = sum(1 for a in artificial_cols if a < col_index)
+            s_idx = col_index - self._num_vars - num_art_before + 1
+            return f"s{s_idx}"
 
     def _is_basis_col(self, col_index, basis_col_set):
         return col_index in basis_col_set
