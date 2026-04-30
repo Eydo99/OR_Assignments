@@ -224,7 +224,7 @@ class SimplexSolver:
         for i in range(num_original_vars):
             if i in self.basis:
                 row_of_var = self.basis.index(i)
-                val = float(self.matrix[row_of_var][-1])
+                val = round(float(self.matrix[row_of_var][-1]),4)
             else:
                 val = 0.0
             variables_final_value.append(val)
@@ -250,8 +250,8 @@ class SimplexSolver:
 
         optimal_value = float(self.matrix[-1][-1])
 
-        if self.lp_problem.obj_fn_type == ObjectiveFunctionType.min:
-            optimal_value = -optimal_value
+        # if self.lp_problem.obj_fn_type == ObjectiveFunctionType.min and optimal_value != 0:
+        #     optimal_value = -optimal_value
 
         solution_dict["optimal_value"] = optimal_value
         return solution_dict
