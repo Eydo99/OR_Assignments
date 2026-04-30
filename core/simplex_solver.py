@@ -120,6 +120,11 @@ class SimplexSolver:
         self.matrix = self.matrix[:, cols_to_keep]
         self.basis = [old_to_new[b] for b in self.basis if b in old_to_new]
 
+        num_constraint_rows = len(self.matrix) - 1
+        if len(self.basis) != num_constraint_rows:
+            self.result = "infeasible"
+            return None
+
         self.free_var_minus_cols = {
             var: old_to_new[col]
             for var, col in self.free_var_minus_cols.items()
@@ -128,7 +133,7 @@ class SimplexSolver:
 
         self._log_step(
             f"Phase 2 — Artificial columns removed. "
-            f"Tableau is now {self.matrix.shape[0]} x {self.matrix.shape[1]}"
+            f"Tableau is now {self.matrix.shape[1]} x {self.matrix.shape[1]}"
         )
 
         z_row = np.zeros(self.matrix.shape[1])
@@ -144,7 +149,7 @@ class SimplexSolver:
             z_row[minus_col] = -z_row[var_idx]
 
         self.matrix[-1] = z_row
-        self._log_step("Phase 2 — Real objective Z-row injected into tableau")
+      #  self._log_step("Phase 2 — Real objective Z-row injected into tableau")
 
         return self.the_last_refiner()
 

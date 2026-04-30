@@ -147,11 +147,15 @@ class TableauPreviewCard(QFrame):
 
         # Build basis labels
         basis_labels = []
+        slack_counter = 0
+        artificial_counter = 0
         for i, info in enumerate(extra_info):
             if info[0] == "slack":
-                basis_labels.append(f"s{[m for m in col_meta].index(('slack', 0)) + 1}")
+                basis_labels.append(f"s{slack_counter + 1}")
+                slack_counter += 1
             else:
-                basis_labels.append(f"?")
+                basis_labels.append(f"a{artificial_counter + 1}")
+                artificial_counter += 1
 
         # Build rows
         rows = []

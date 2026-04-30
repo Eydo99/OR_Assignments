@@ -1,247 +1,338 @@
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QFrame, QScrollArea, QHBoxLayout,
-    QPushButton, QSizePolicy, QTableWidget, QTableWidgetItem, QHeaderView
-)
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QFont
+/* Global Application Palette */
+QMainWindow, ContentArea, QWidget#CentralWidget {
+    background-color: #111827;
+}
 
+QToolTip {
+    background-color: #16213e;
+    color: #e2e8f0;
+    border: 1px solid #1a4a8a;
+    padding: 4px 8px;
+    font-size: 12px;
+}
 
-class TableauStepsPage(QWidget):
-    """Page 3 – Shows step-by-step simplex tableau iterations."""
+/* Scroll Area and Scrollbar */
+QScrollArea {
+    background: transparent;
+    border: none;
+}
+QScrollBar:vertical {
+    background: #0d1b2a;
+    width: 8px;
+    border: none;
+}
+QScrollBar::handle:vertical {
+    background: #1a4a8a;
+    border-radius: 4px;
+    min-height: 30px;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: transparent;
+}
 
-    def __init__(self):
-        super().__init__()
+/* Base transparent containers */
+QWidget#TransparentWidget, QWidget#TitleContainer, QWidget#StepsContainer {
+    background: transparent;
+}
 
-        outer = QVBoxLayout(self)
-        outer.setContentsMargins(0, 0, 0, 0)
+/* Separator */
+QWidget#Separator {
+    background-color: #1a3050;
+}
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setFrameShape(QFrame.NoFrame)
-        outer.addWidget(scroll)
+/* Section Header */
+QLabel#SectionHeader {
+    color: #4f9cf9;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    background: transparent;
+    border: none;
+}
 
-        container = QWidget()
-        container.setObjectName("TransparentWidget")
-        scroll.setWidget(container)
+/* Cards */
+QFrame#CardFrame {
+    background-color: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 10px;
+    padding: 8px;
+}
 
-        self._layout = QVBoxLayout(container)
-        self._layout.setContentsMargins(28, 28, 28, 28)
-        self._layout.setSpacing(20)
+QFrame#PlaceholderCard {
+    background-color: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 10px;
+    padding: 40px;
+}
 
-        header = QLabel("TABLEAU STEPS")
-        header.setObjectName("SectionHeader")
-        self._layout.addWidget(header)
+QFrame#StepCard {
+    background-color: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 10px;
+    padding: 16px;
+}
 
-        self._summary_label = QLabel()
-        self._summary_label.setObjectName("SuccessMsg")
-        self._summary_label.hide()
-        self._layout.addWidget(self._summary_label)
+QFrame#ResultsCard {
+    background-color: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 10px;
+    padding: 20px;
+}
 
-        self._placeholder_card = self._build_placeholder()
-        self._layout.addWidget(self._placeholder_card)
+/* Common Labels in Cards */
+QLabel#CardTitle {
+    color: #e2e8f0;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+}
 
-        self._steps_container = QWidget()
-        self._steps_container.setObjectName("StepsContainer")
-        self._steps_layout = QVBoxLayout(self._steps_container)
-        self._steps_layout.setContentsMargins(0, 0, 0, 0)
-        self._steps_layout.setSpacing(16)
-        self._steps_container.hide()
-        self._layout.addWidget(self._steps_container)
+QLabel#CardHint {
+    color: #4a5568;
+    font-size: 11px;
+    border: none;
+    background: transparent;
+}
 
-        self._layout.addStretch()
+QLabel#CardSubHint {
+    color: #718096;
+    font-size: 12px;
+    border: none;
+    background: transparent;
+}
 
-        self._num_vars = 0
+QLabel#StandardLabel {
+    color: #cbd5e0;
+    font-size: 13px;
+    border: none;
+    background: transparent;
+}
 
-    def _build_placeholder(self):
-        card = QFrame()
-        card.setObjectName("PlaceholderCard")
-        card_layout = QVBoxLayout(card)
-        card_layout.setAlignment(Qt.AlignCenter)
-        card_layout.setSpacing(16)
+/* Forms: Combo & Spinbox */
+QComboBox, QDoubleSpinBox, QSpinBox {
+    background-color: #0f3460;
+    color: #e2e8f0;
+    border: 1px solid #1a4a8a;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    min-width: 55px;
+}
+QComboBox:focus, QDoubleSpinBox:focus, QSpinBox:focus {
+    border: 1px solid #4f9cf9;
+}
+QComboBox::drop-down {
+    border: none;
+    background-color: #0f3460;
+}
+QComboBox::down-arrow {
+    width: 10px;
+    height: 10px;
+}
+QComboBox QAbstractItemView {
+    background-color: #16213e;
+    color: #e2e8f0;
+    selection-background-color: #0d2948;
+    border: 1px solid #1a4a8a;
+}
+QDoubleSpinBox::up-button, QDoubleSpinBox::down-button, QSpinBox::up-button, QSpinBox::down-button {
+    background-color: #1a4a8a;
+    border: none;
+    width: 16px;
+}
+QDoubleSpinBox::up-button:hover, QDoubleSpinBox::down-button:hover, QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+    background-color: #4f9cf9;
+}
+QDoubleSpinBox {
+    selection-background-color: #1a4a8a;
+    selection-color: #e2e8f0;
+}
+QSpinBox {
+    selection-background-color: #1a4a8a;
+    selection-color: #e2e8f0;
+}
 
-        icon_label = QLabel("📋")
-        icon_label.setObjectName("IconLabel")
-        icon_label.setAlignment(Qt.AlignCenter)
-        card_layout.addWidget(icon_label)
+/* Sidebar Elements */
+QLabel#AppTitle {
+    color: #4f9cf9;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
 
-        msg = QLabel("No tableau steps yet")
-        msg.setObjectName("PlaceholderMsg")
-        msg.setAlignment(Qt.AlignCenter)
-        card_layout.addWidget(msg)
+QLabel#FooterLabel {
+    color: #4a5568;
+    font-size: 10px;
+    padding: 12px 18px;
+    letter-spacing: 1px;
+}
 
-        sub = QLabel("Tableau iterations will appear here step-by-step after you solve a problem.")
-        sub.setObjectName("CardSubHint")
-        sub.setAlignment(Qt.AlignCenter)
-        sub.setWordWrap(True)
-        card_layout.addWidget(sub)
+QPushButton#SidebarBtn {
+    background-color: transparent;
+    color: #718096;
+    border: none;
+    border-left: 3px solid transparent;
+    padding: 14px 18px 14px 15px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 400;
+}
+QPushButton#SidebarBtn:hover {
+    background-color: rgba(15, 52, 96, 0.35);
+    color: #cbd5e0;
+}
+QPushButton#SidebarBtn[active="true"] {
+    background-color: rgba(15, 52, 96, 0.6);
+    color: #ffffff;
+    border-left: 3px solid #4f9cf9;
+    font-weight: 600;
+}
 
-        return card
+/* ── Pill Buttons (variable restriction toggles) ─────────────────────────────
+   border-radius must be repeated on every pseudo-state because Qt does NOT
+   inherit it from the base rule — omitting it resets to 0 (rectangle).       */
+QPushButton#PillBtn {
+    background-color: rgba(26, 58, 110, 0.7);
+    color: #4f9cf9;
+    border: 1px solid #4f9cf9;
+    border-radius: 14px;
+    padding: 5px 14px;
+    font-size: 11px;
+    font-weight: 500;
+}
+QPushButton#PillBtn:hover {
+    background-color: rgba(26, 58, 110, 1.0);
+    border-radius: 14px;
+}
+QPushButton#PillBtn:checked {
+    background-color: rgba(45, 27, 105, 0.7);
+    color: #a78bfa;
+    border: 1px solid #a78bfa;
+    border-radius: 14px;   /* ← keeps the oval shape when toggled to "free" */
+}
+QPushButton#PillBtn:checked:hover {
+    background-color: rgba(45, 27, 105, 1.0);
+    border-radius: 14px;
+}
 
-    # ── Public API ──
-    def show_steps(self, steps: list, num_vars: int = 0):
-        if not steps:
-            self.reset()
-            return
+/* Action Buttons (Reset, Solve) */
+QPushButton#ResetBtn {
+    background-color: transparent;
+    color: #a0aec0;
+    border: 1px solid #2a4a7a;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+}
+QPushButton#ResetBtn:hover {
+    background-color: rgba(15, 52, 96, 0.5);
+    border-color: #4f9cf9;
+    color: #e2e8f0;
+}
+QPushButton#ResetBtn:pressed {
+    background-color: rgba(15, 52, 96, 0.8);
+}
 
-        self._num_vars = num_vars
-        self._clear_steps()
-        self._placeholder_card.hide()
-        self._steps_container.show()
+QPushButton#SolveBtn {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #4f9cf9, stop:1 #6366f1);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+}
+QPushButton#SolveBtn:hover {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #378add, stop:1 #4f46e5);
+}
+QPushButton#SolveBtn:pressed {
+    background-color: #2563eb;
+}
 
-        pivot_count = sum(1 for s in steps if s.get("pivot_row") is not None)
-        self._summary_label.setText(
-            f"✔  Solved in {pivot_count} iteration{'s' if pivot_count != 1 else ''}"
-        )
-        self._summary_label.show()
+/* Tableau Table */
+QTableWidget {
+    background-color: #0f3460;
+    color: #e2e8f0;
+    border: none;
+    font-size: 13px;
+    gridline-color: #1a4a8a;
+}
+QTableWidget::item {
+    padding: 6px;
+}
+QTableWidget::item:selected {
+    background-color: #1a4a8a;
+}
+QHeaderView::section {
+    background-color: #0d2948;
+    color: #4f9cf9;
+    padding: 6px 4px;
+    border: none;
+    border-bottom: 2px solid #1a4a8a;
+    font-size: 12px;
+    font-weight: 700;
+}
 
-        for idx, step in enumerate(steps):
-            card = self._build_step_card(step, idx)
-            self._steps_layout.addWidget(card)
-
-    def _build_step_card(self, step, index):
-        card = QFrame()
-        card.setObjectName("StepCard")
-        card_layout = QVBoxLayout(card)
-        card_layout.setSpacing(10)
-
-        message = step.get("message", "")
-        title = QLabel(f"Step {index + 1}  —  {message}")
-        title.setObjectName("StepTitle")
-        card_layout.addWidget(title)
-
-        basis = step.get("basis", [])
-        matrix = step.get("matrix", None)
-        pivot_row = step.get("pivot_row", None)
-        pivot_col = step.get("pivot_col", None)
-
-        if matrix is not None:
-            num_rows, num_cols = matrix.shape
-            # num_cols includes the RHS column; data columns = num_cols - 1
-            num_data_cols = num_cols - 1
-            total_display_cols = num_data_cols + 1 + 1  # Basis + data cols + RHS
-
-            table = QTableWidget(num_rows, num_data_cols + 2)  # Basis + data + RHS
-            table.setObjectName("StepTableau")
-
-            # Build per-step column headers based on actual matrix width
-            headers = ["Basis"]
-            for c in range(num_data_cols):
-                headers.append(self._col_name_for_step(c, num_data_cols))
-            headers.append("RHS")
-            table.setHorizontalHeaderLabels(headers)
-
-            table.verticalHeader().setVisible(False)
-
-            # Row labels from basis
-            row_labels = []
-            for r in range(num_rows - 1):
-                if r < len(basis):
-                    row_labels.append(
-                        self._col_name_for_step(int(basis[r]), num_data_cols)
-                    )
-                else:
-                    row_labels.append(f"R{r}")
-            row_labels.append("Z")
-
-            is_z_row = lambda r: r == num_rows - 1
-            basis_col_set = set(int(b) for b in basis) if basis else set()
-
-            for r in range(num_rows):
-                # Basis label cell (col 0)
-                basis_item = QTableWidgetItem(row_labels[r])
-                basis_item.setTextAlignment(Qt.AlignCenter)
-                basis_item.setFlags(basis_item.flags() & ~Qt.ItemIsEditable)
-                basis_item.setForeground(QColor("#4f9cf9"))
-                font = basis_item.font()
-                font.setBold(True)
-                basis_item.setFont(font)
-                if is_z_row(r):
-                    basis_item.setBackground(QColor("#0a1628"))
-                table.setItem(r, 0, basis_item)
-
-                # Data columns (cols 1..num_data_cols) then RHS in last col
-                for c in range(num_cols):  # c iterates over actual matrix columns
-                    val = matrix[r][c]
-                    is_rhs = (c == num_cols - 1)
-                    display_col = c + 1  # shift right by 1 for the Basis column
-
-                    text = self._format_val(val)
-                    item = QTableWidgetItem(text)
-                    item.setTextAlignment(Qt.AlignCenter)
-                    item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-
-                    # Pivot highlight: only on data columns (not RHS), use c directly
-                    if (
-                        pivot_row is not None
-                        and pivot_col is not None
-                        and r == pivot_row
-                        and c == pivot_col
-                        and not is_rhs
-                    ):
-                        item.setBackground(QColor("#92400e"))
-                        item.setForeground(QColor("#fbbf24"))
-                        font = item.font()
-                        font.setBold(True)
-                        item.setFont(font)
-
-                    elif is_z_row(r):
-                        item.setBackground(QColor("#0a1628"))
-                        item.setForeground(QColor("#94a3b8"))
-                        font = item.font()
-                        font.setBold(True)
-                        item.setFont(font)
-
-                    elif not is_rhs and self._is_basis_col(c, basis_col_set):
-                        item.setBackground(QColor("#0d2948"))
-                        item.setForeground(QColor("#60a5fa"))
-
-                    table.setItem(r, display_col, item)
-
-            table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-            table.setMinimumWidth(500)
-            table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-            table.horizontalHeader().setMinimumSectionSize(60)
-            row_height = 36
-            header_height = 34
-            table.setFixedHeight(header_height + (num_rows * row_height) + 6)
-
-            card_layout.addWidget(table)
-
-        return card
-
-    # ── Utility methods ──
-
-    def _format_val(self, val):
-        if abs(val - round(val)) < 1e-9:
-            return str(int(round(val)))
-        return f"{val:.4f}"
-
-    def _col_name_for_step(self, col_index: int, num_data_cols: int) -> str:
-        """
-        Generate a readable column name based on the actual matrix width for
-        this specific step. This correctly handles both Phase 1 (which includes
-        artificial columns) and Phase 2 (which has them stripped out).
-
-        Layout of data columns (0-indexed, excluding RHS):
-          0 .. num_vars-1          → x1, x2, ...
-          num_vars .. num_data_cols-1 → s1, s2, ... (slack / surplus / artificial)
-        """
-        if col_index < self._num_vars:
-            return f"x{col_index + 1}"
-        else:
-            return f"s{col_index - self._num_vars + 1}"
-
-    def _is_basis_col(self, col_index, basis_col_set):
-        return col_index in basis_col_set
-
-    def _clear_steps(self):
-        while self._steps_layout.count():
-            item = self._steps_layout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
-
-    def reset(self):
-        self._clear_steps()
-        self._steps_container.hide()
-        self._summary_label.hide()
-        self._placeholder_card.show()
+/* Assorted Labels */
+QLabel#IconLabel {
+    font-size: 40px;
+    border: none;
+    background: transparent;
+}
+QLabel#PlaceholderMsg {
+    color: #e2e8f0;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+}
+QLabel#ErrorMsg {
+    color: #fc8181;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+}
+QLabel#SuccessMsg {
+    color: #68d391;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+}
+QLabel#OptimalVal {
+    color: #e2e8f0;
+    font-size: 22px;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+    padding: 8px 0px;
+}
+QLabel#VariablePill {
+    color: #4f9cf9;
+    background-color: #0f3460;
+    border: 1px solid #1a4a8a;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+}
+QLabel#StepTitle {
+    color: #4f9cf9;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+}
+QLabel#GridHeader {
+    color: #4f9cf9;
+    font-size: 11px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+}
