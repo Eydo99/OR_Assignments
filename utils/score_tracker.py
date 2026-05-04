@@ -1,4 +1,4 @@
-from utils.player_role import PlayerRole
+from utils.enums.player_role import PlayerRole
 
 
 class ScoreTracker:
