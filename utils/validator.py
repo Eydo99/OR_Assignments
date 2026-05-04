@@ -1,4 +1,4 @@
-from utils.enums.player_role import PlayerRole
+from utils.enums.role import Role
 
 class Validator:
     @staticmethod
@@ -10,8 +10,8 @@ class Validator:
         return None
 
     @staticmethod
-    def validate_role(player_role:PlayerRole)->bool:
-        return True if (player_role==PlayerRole.hider or player_role==PlayerRole.seeker) else False
+    def validate_role(player_role:Role)->bool:
+        return True if (player_role==Role.hider or player_role==Role.seeker) else False
 
     @staticmethod
     def validate_world_size(world_size:int)->bool:

@@ -1,4 +1,4 @@
-from utils.enums.player_role import PlayerRole
+from utils.enums.role import Role
 
 
 class ScoreTracker:
@@ -8,8 +8,8 @@ class ScoreTracker:
         self.player_rounds_won = 0
         self.computer_rounds_won = 0
 
-    def update_score(self, score:int , player_role:PlayerRole)->None:
-        if player_role==PlayerRole.hider:
+    def update_score(self, score:int , player_role: Role)->None:
+        if player_role==Role.hider:
             self.player_score += score
             self.computer_score -= score
             if score>0:

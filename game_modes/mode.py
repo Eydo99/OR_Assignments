@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 class GameMode(ABC):
     @abstractmethod
-    def start(self):
+    def start_game(self):
         pass
 
     @abstractmethod
@@ -10,10 +10,10 @@ class GameMode(ABC):
         pass
 
     @abstractmethod
-    def reset(self):
+    def reset_game(self):
         pass
 
     @abstractmethod
-    def show_round_results(self):
+    def show_results(self):
         pass
 

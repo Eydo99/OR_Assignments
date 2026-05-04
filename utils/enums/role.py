@@ -1,5 +1,5 @@
 from enum import Enum
 
-class PlayerRole(Enum):
+class Role(Enum):
     hider ="hider"
     seeker = "seeker"
