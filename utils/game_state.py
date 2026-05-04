@@ -6,7 +6,8 @@ from utils.score_tracker import ScoreTracker
 
 @dataclass
 class GameState:
-    worldSize:int
+    world_size:int
+    world_dimension:int
     game_mode:GameMode
     player_role:Role
     current_round:int
