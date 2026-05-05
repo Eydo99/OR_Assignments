@@ -6,7 +6,7 @@ class GameMode(ABC):
         pass
 
     @abstractmethod
-    def play_round(self):
+    def play_round(self,player_position=None):
         pass
 
     @abstractmethod
