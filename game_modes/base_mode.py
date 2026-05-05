@@ -1,6 +1,4 @@
 import random
-
-from game_modes import simulation_results
 from game_modes.mode import GameMode
 from game_modes.simulation_results import SimulationResults
 from utils.enums.role import Role
