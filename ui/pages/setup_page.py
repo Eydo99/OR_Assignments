@@ -159,7 +159,7 @@ class SetupPage(QWidget):
         # ── Choose Your Role ────────────────────────
         role_widget = QWidget()
         role_widget.setFixedWidth(520)
-        role_widget.setMinimumHeight(140)
+        role_widget.setMinimumHeight(130)
         role_layout = QVBoxLayout(role_widget)
         role_layout.setContentsMargins(0, 0, 0, 0)
         role_layout.setSpacing(12)
