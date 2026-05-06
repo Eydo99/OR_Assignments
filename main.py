@@ -8,7 +8,7 @@ from ui.pages.setup_page import SetupPage
 from ui.pages.war_room_page import WarRoomPage
 
 from utils.enums.role import Role
-from utils.enums.game_mode import GameMode
+from utils.enums.game_mode import GameModeType
 from utils.game_state import GameState
 from utils.score_tracker import ScoreTracker
 from game_modes.interactive_mode import InteractiveMode
@@ -66,7 +66,7 @@ def main():
         
         score_tracker = ScoreTracker()
         player_role = Role.hider if role == "Hider" else Role.seeker
-        game_mode_enum = GameMode.interactive if mode == "Interactive" else GameMode.simulation
+        game_mode_enum = GameModeType.interactive if mode == "Interactive" else GameModeType.simulation
         
         game_state = GameState(
             world_size=n,
@@ -114,7 +114,7 @@ def main():
     def on_place_clicked(idx):
         if not hasattr(window, "active_game"): return
         game = window.active_game
-        if game.game_state.game_mode == GameMode.simulation:
+        if game.game_state.game_mode == GameModeType.simulation:
             war_room_page.log_event("Simulation mode already finished.")
             return
 

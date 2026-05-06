@@ -1,9 +1,5 @@
 import random
 from game_modes.base_mode import BaseMode
-from utils.enums.role import Role
-
-
-
 
 class SimulationMode(BaseMode):
 

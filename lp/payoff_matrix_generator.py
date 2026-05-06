@@ -1,4 +1,3 @@
-from utils.enums.place_type import PlaceType
 from world.place import Place
 from world.world import World
 import numpy as np

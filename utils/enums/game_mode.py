@@ -1,5 +1,5 @@
 from enum import Enum
 
-class GameMode(Enum):
+class GameModeType(Enum):
     interactive="interactive"
     simulation="simulation"

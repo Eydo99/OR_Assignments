@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from utils.enums.game_mode import GameMode
+from utils.enums.game_mode import GameModeType
 from utils.enums.role import Role
 from utils.score_tracker import ScoreTracker
 
@@ -8,7 +8,7 @@ from utils.score_tracker import ScoreTracker
 class GameState:
     world_size:int
     world_dimension:int
-    game_mode:GameMode
+    game_mode:GameModeType
     player_role:Role
     current_round:int
     score_tracker:ScoreTracker

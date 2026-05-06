@@ -88,7 +88,7 @@ class SideNavBar(QWidget):
 
     page_requested = Signal(int)
 
-    # (unicode icon, label)
+    # (Unicode icon, label)
     NAV_ITEMS = [
         ("⚙",  "Setup"),
         ("⚔",  "War Room"),
@@ -220,7 +220,7 @@ class MainWindow(QMainWindow):
         self._nav.navigate_to(1)
 
     def go_to_setup(self):
-        """Navigate back to Setup."""
+        """Navigate back to Set up."""
         self._switch_page(0)
         self._nav.navigate_to(0)
 
