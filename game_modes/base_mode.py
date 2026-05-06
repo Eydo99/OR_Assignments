@@ -27,6 +27,10 @@ class BaseMode(GameMode,ABC):
 
         original_computer_position = computer_position
         original_player_position = player_position
+        
+        # Store flat index for UI display
+        computer_flat_index = computer_position if world_dimension == 1 else int(computer_position[0] * world_size + computer_position[1])
+        
         if world_dimension == 2:
             computer_position = int(computer_position[0] * world_size + computer_position[1])
             player_position = int(player_position[0] * world_size + player_position[1])
@@ -43,6 +47,9 @@ class BaseMode(GameMode,ABC):
             self.game_state.score_tracker.update_score(hider_score, seeker_score, player_role)
 
         self.game_state.current_round += 1
+        
+        # Return computer's flat index for UI display
+        return computer_flat_index
 
 
     def reset_game(self) :

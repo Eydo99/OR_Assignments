@@ -10,15 +10,21 @@ class SimplexSolver:
         self.free_var_minus_cols = getattr(tableau_matrix, "free_var_minus_cols", {})
         self.result = None
         self.lp_problem = lp_problem
+        self.iteration_count = 0
+        self.phase_1_iterations = 0
+        self.phase_2_iterations = 0
+        self.used_two_phase = False
 
     def solve(self):
         if len(self.artificial_cols) > 0:
+            self.used_two_phase = True
             status = self._phase_1()
             if status == "infeasible":
                 self.result = "infeasible"
                 return None
             return self.phase2_tableau_maker()
         else:
+            self.used_two_phase = False
             self.result = self._simple_solve()
             if self.result == "unbounded":
                 return None
@@ -38,7 +44,9 @@ class SimplexSolver:
 
         self.matrix[-1] = w_row
 
+        phase_1_start = self.iteration_count
         self._simple_solve()
+        self.phase_1_iterations = self.iteration_count - phase_1_start
 
         optimal_w_value = self.matrix[-1][-1]
         if optimal_w_value < -1e-7:
@@ -120,7 +128,10 @@ class SimplexSolver:
                 continue
 
             self.matrix[-1] -= z_coeff * self.matrix[i]
+        
+        phase_2_start = self.iteration_count
         self.result = self._simple_solve()
+        self.phase_2_iterations = self.iteration_count - phase_2_start
 
         if self.result == "unbounded":
             return None
@@ -151,6 +162,7 @@ class SimplexSolver:
                 return "unbounded"
 
             self._pivot(min_pivot_index, min_index)
+            self.iteration_count += 1
 
     def _write_result(self):
         solution_dict = {}
@@ -183,6 +195,11 @@ class SimplexSolver:
             optimal_value = -optimal_value
 
         solution_dict["optimal_value"] = optimal_value
+        solution_dict["iteration_count"] = self.iteration_count
+        solution_dict["phase_1_iterations"] = self.phase_1_iterations
+        solution_dict["phase_2_iterations"] = self.phase_2_iterations
+        solution_dict["used_two_phase"] = self.used_two_phase
+        solution_dict["status"] = "Optimal"
         return solution_dict
 
     def _pivot(self, pivot_row, pivot_column):

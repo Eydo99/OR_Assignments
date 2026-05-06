@@ -40,12 +40,31 @@ class GameEngine:
         LP_problem=Parser(lp_problem_dict).build_lp_problem()
         tableau_matrix=TableauMatrix(LP_problem)
         tableau_matrix.build_tableau_matrix()
-        solution_dict=SimplexSolver(tableau_matrix,LP_problem).solve()
+        solver = SimplexSolver(tableau_matrix,LP_problem)
+        solution_dict=solver.solve()
+        
+        # Extract solver metadata
         probabilities=solution_dict['variables'][:-1]
+        game_value = solution_dict['optimal_value']
+        iteration_count = solution_dict['iteration_count']
+        solver_status = solution_dict['status']
+        solver_method = "2-Phase" if solution_dict['used_two_phase'] else "Simplex"
+        
         game_state=GameState(self.world_size,self.world_dimension,self.game_mode_type,self.player_role,0,ScoreTracker())
         game_mode=InteractiveMode(game_state,probabilities,payoff_matrix) if (self.game_mode_type==GameModeType.interactive)\
             else SimulationMode(game_state,probabilities,payoff_matrix)
-        return GameSetup(probabilities,game_state,game_mode)
+        
+        return GameSetup(
+            probabilities=probabilities,
+            game_state=game_state,
+            mode=game_mode,
+            world=world,
+            payoff_matrix=payoff_matrix,
+            game_value=game_value,
+            iteration_count=iteration_count,
+            solver_method=solver_method,
+            solver_status=solver_status
+        )
 
 
 

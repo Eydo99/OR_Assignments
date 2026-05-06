@@ -28,6 +28,10 @@ class WarRoomPage(QWidget):
         self._grid_size: int = 0
         self._role:     str  = ""
         self._mode:     str  = ""
+        
+        # Separate stat labels for 1D and 2D views
+        self._stat_labels_1d: dict[str, QLabel] = {}
+        self._stat_labels_2d: dict[str, QLabel] = {}
 
         self._build_ui()
 
@@ -243,8 +247,34 @@ class WarRoomPage(QWidget):
         self._world_title.setProperty("class", "section-label")
         world_lay.addWidget(self._world_title)
 
+        # ── Legend + Opponent Move Indicator (side by side) ──
+        legend_row = QHBoxLayout()
+        legend_row.setSpacing(8)
+        
         self._1d_legend = self._build_difficulty_legend()
-        world_lay.addWidget(self._1d_legend)
+        legend_row.addWidget(self._1d_legend)
+        
+        legend_row.addStretch()
+        
+        # Opponent Move Indicator (compact, inline)
+        self._opponent_move_label = QLabel("Waiting...")
+        self._opponent_move_label.setAlignment(Qt.AlignCenter)
+        self._opponent_move_label.setStyleSheet(f"""
+            QLabel {{
+                background-color: rgba(6, 182, 212, 0.1);
+                color: {theme.CYAN};
+                border: 1px solid {theme.CYAN};
+                border-radius: 6px;
+                padding: 4px 10px;
+                font-size: {theme.FONT_SM}px;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+            }}
+        """)
+        self._opponent_move_label.setVisible(False)  # Hidden initially
+        legend_row.addWidget(self._opponent_move_label)
+        
+        world_lay.addLayout(legend_row)
 
         strip_scroll = QScrollArea()
         strip_scroll.setWidgetResizable(True)
@@ -274,7 +304,6 @@ class WarRoomPage(QWidget):
 
         stats_grid = QGridLayout()
         stats_grid.setSpacing(8)
-        self._stat_labels: dict[str, QLabel] = {}
 
         for title, display, val, row, c in [
             ("STATUS",     "STATUS",        "—", 0, 0),
@@ -302,7 +331,7 @@ class WarRoomPage(QWidget):
             cl.addWidget(lt)
             cl.addWidget(lv)
             stats_grid.addWidget(card, row, c)
-            self._stat_labels[title] = lv
+            self._stat_labels_1d[title] = lv
 
         strat_panel = QFrame()
         strat_panel.setProperty("class", "score-panel")
@@ -343,10 +372,39 @@ class WarRoomPage(QWidget):
         play_lay.setContentsMargins(12, 12, 12, 12)
         play_lay.setSpacing(16)
 
+        # Left side: Grid with compact opponent indicator
+        left_col = QVBoxLayout()
+        left_col.setSpacing(8)
+        
+        # ── Opponent Move Indicator (2D - compact, top-right) ──
+        indicator_row = QHBoxLayout()
+        indicator_row.addStretch()
+        
+        self._opponent_move_label_2d = QLabel("Waiting...")
+        self._opponent_move_label_2d.setAlignment(Qt.AlignCenter)
+        self._opponent_move_label_2d.setStyleSheet(f"""
+            QLabel {{
+                background-color: rgba(6, 182, 212, 0.1);
+                color: {theme.CYAN};
+                border: 1px solid {theme.CYAN};
+                border-radius: 6px;
+                padding: 4px 10px;
+                font-size: {theme.FONT_SM}px;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+            }}
+        """)
+        self._opponent_move_label_2d.setVisible(False)  # Hidden initially
+        indicator_row.addWidget(self._opponent_move_label_2d)
+        
+        left_col.addLayout(indicator_row)
+        
         self._grid_widget = WorldGrid2DWidget("")
         self._grid_widget.setStyleSheet("background: transparent;")
         self._grid_widget.cell_clicked.connect(self._on_place_clicked)
-        play_lay.addWidget(self._grid_widget, stretch=1)
+        left_col.addWidget(self._grid_widget, stretch=1)
+        
+        play_lay.addLayout(left_col, stretch=1)
 
         stats_col = QVBoxLayout()
         stats_col.setSpacing(8)
@@ -355,7 +413,6 @@ class WarRoomPage(QWidget):
 
         stats_grid_2d = QGridLayout()
         stats_grid_2d.setSpacing(8)
-        self._stat_labels: dict[str, QLabel] = {}
 
         for title, display, val, row, c in [
             ("STATUS",     "STATUS",        "—", 0, 0),
@@ -383,7 +440,7 @@ class WarRoomPage(QWidget):
             cl.addWidget(lt)
             cl.addWidget(lv)
             stats_grid_2d.addWidget(card, row, c)
-            self._stat_labels[title] = lv
+            self._stat_labels_2d[title] = lv
 
         stats_col.addLayout(stats_grid_2d)
         stats_col.addStretch()
@@ -519,14 +576,23 @@ class WarRoomPage(QWidget):
         game_value: str = "",
         runtime:    str = "",
     ):
-        for key, val in {
+        """Update stats in both 1D and 2D views."""
+        stats_dict = {
             "STATUS":     status,
             "ITERATIONS": iterations,
             "GAME VALUE": game_value,
             "RUNTIME":    runtime,
-        }.items():
-            if val and key in self._stat_labels:
-                self._stat_labels[key].setText(val)
+        }
+        
+        # Update 1D stats
+        for key, val in stats_dict.items():
+            if val and key in self._stat_labels_1d:
+                self._stat_labels_1d[key].setText(val)
+        
+        # Update 2D stats
+        for key, val in stats_dict.items():
+            if val and key in self._stat_labels_2d:
+                self._stat_labels_2d[key].setText(val)
 
     def set_round(self, n: int):
         self._lbl_round_num.setText(str(n))
@@ -534,6 +600,33 @@ class WarRoomPage(QWidget):
             self._grid_widget.set_title(f"2D GRID — ROUND {n}")
         else:
             self._world_title.setText(f"WORLD 1D STRIP — ROUND {n}")
+
+    def show_opponent_move(self, place_name: str, place_index: int):
+        """
+        Display where the opponent (computer) played in the previous round.
+        
+        Args:
+            place_name: Name of the location (e.g., "Forest", "Beach")
+            place_index: Index of the place (0-based)
+        """
+        message = f"🤖 Opponent selected: {place_name} (#{place_index})"
+        
+        if self._is_2d:
+            self._opponent_move_label_2d.setText(message)
+            self._opponent_move_label_2d.setVisible(True)
+        else:
+            self._opponent_move_label.setText(message)
+            self._opponent_move_label.setVisible(True)
+    
+    def hide_opponent_move(self):
+        """Hide the opponent move indicator (used on reset or game start)."""
+        if hasattr(self, '_opponent_move_label'):
+            self._opponent_move_label.setText("Waiting...")
+            self._opponent_move_label.setVisible(False)
+        
+        if hasattr(self, '_opponent_move_label_2d'):
+            self._opponent_move_label_2d.setText("Waiting...")
+            self._opponent_move_label_2d.setVisible(False)
 
     def log_event(self, message: str):
         self._event_log.append(f"► {message}")
@@ -561,6 +654,7 @@ class WarRoomPage(QWidget):
         self.set_round(1)
         self._event_log.clear()
         self.update_probabilities([])
+        self.hide_opponent_move()  # Hide opponent move indicator
         for i in range(len(self._place_buttons)):
             self.highlight_place(i, None)
 

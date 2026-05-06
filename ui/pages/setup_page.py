@@ -1,5 +1,3 @@
-
-
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QFrame, QGraphicsDropShadowEffect
@@ -11,7 +9,6 @@ from ui import theme
 
 
 class ClickableCard(QFrame):
-
     clicked = Signal()
 
     def __init__(self, parent=None):
@@ -22,8 +19,6 @@ class ClickableCard(QFrame):
             self.clicked.emit()
         super().mousePressEvent(event)
 
-    # After children are added, make them all transparent to mouse so
-    # clicks reach this frame's mousePressEvent.
     def _seal_children(self):
         for child in self.findChildren(QWidget):
             child.setAttribute(Qt.WA_TransparentForMouseEvents, True)
@@ -37,17 +32,18 @@ class SetupPage(QWidget):
         super().__init__(parent)
         self.setObjectName("SetupPage")
 
-        self.world_size         = 5
-        self.selected_role      = None
-        self.selected_mode      = "Interactive"
-        self.selected_dimension = 1   # 1 = 1D strip, 2 = 2D grid
+        self.world_size = 5
+        self.selected_role = None
+        self.selected_mode = "Interactive"
+        self.selected_dimension = 1  # 1 = 1D strip, 2 = 2D grid
 
         self._build_ui()
         self._refresh_state()
 
     def _build_ui(self):
+        # ── Main Page Layout (Compacted for Single-Screen Fit) ──
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(40, 40, 40, 40)
+        main_layout.setContentsMargins(20, 20, 20, 20)  # Reduced margins
         main_layout.setSpacing(0)
         main_layout.setAlignment(Qt.AlignTop | Qt.AlignHCenter)
 
@@ -60,20 +56,20 @@ class SetupPage(QWidget):
         subtitle.setProperty("class", "page-subtitle")
 
         main_layout.addWidget(title)
-        main_layout.addSpacing(6)
+        main_layout.addSpacing(4)
         main_layout.addWidget(subtitle)
-        main_layout.addSpacing(32)
+        main_layout.addSpacing(16)
 
         # ── World Size (N) ──────────────────────────
         size_section_lbl = QLabel("WORLD SIZE (N)")
         size_section_lbl.setAlignment(Qt.AlignCenter)
         size_section_lbl.setProperty("class", "section-label")
         main_layout.addWidget(size_section_lbl)
-        main_layout.addSpacing(12)
+        main_layout.addSpacing(8)
 
         size_card = QFrame()
         size_card.setProperty("class", "size-container")
-        size_card.setFixedSize(240, 76)
+        size_card.setFixedSize(280, 76)  # Increased width to 280 to perfectly center the N
 
         size_card_lay = QHBoxLayout(size_card)
         size_card_lay.setContentsMargins(14, 12, 14, 12)
@@ -114,14 +110,16 @@ class SetupPage(QWidget):
         size_card_lay.addStretch()
         size_card_lay.addWidget(self.btn_plus)
 
+        # CHANGED LINE HERE: Added alignment=Qt.AlignCenter
         main_layout.addWidget(size_card, alignment=Qt.AlignCenter)
-        main_layout.addSpacing(24)
+        main_layout.addSpacing(16)
 
+        # ── World Dimension ──────────────────────────
         dim_widget = QWidget()
         dim_widget.setFixedWidth(520)
         dim_layout = QVBoxLayout(dim_widget)
         dim_layout.setContentsMargins(0, 0, 0, 0)
-        dim_layout.setSpacing(12)
+        dim_layout.setSpacing(8)
 
         dim_lbl = QLabel("WORLD DIMENSION")
         dim_lbl.setProperty("class", "section-label")
@@ -153,16 +151,15 @@ class SetupPage(QWidget):
         dim_t_lay.addWidget(self.btn_dim_2d)
         dim_layout.addWidget(dim_toggle_bg)
 
-        main_layout.addWidget(dim_widget, alignment=Qt.AlignCenter)
-        main_layout.addSpacing(24)
+        main_layout.addWidget(dim_widget)
+        main_layout.addSpacing(16)
 
         # ── Choose Your Role ────────────────────────
         role_widget = QWidget()
         role_widget.setFixedWidth(520)
-        role_widget.setMinimumHeight(130)
         role_layout = QVBoxLayout(role_widget)
         role_layout.setContentsMargins(0, 0, 0, 0)
-        role_layout.setSpacing(12)
+        role_layout.setSpacing(8)
 
         role_lbl = QLabel("CHOOSE YOUR ROLE")
         role_lbl.setProperty("class", "section-label")
@@ -170,16 +167,15 @@ class SetupPage(QWidget):
 
         cards_lay = QHBoxLayout()
         cards_lay.setSpacing(16)
-        cards_lay.setAlignment(Qt.AlignTop)
-        self.btn_hider  = self._create_role_card("🙈", "Hider",
-            "Pick a hiding spot · maximize your concealment score")
-        self.btn_seeker = self._create_role_card("🔍", "Seeker",
-            "Search for the Hider · maximize your detection score")
+        cards_lay.setAlignment(Qt.AlignTop | Qt.AlignHCenter)
+
+        # Subtitles removed, layout shrinks automatically
+        self.btn_hider = self._create_role_card("🙈", "Hider")
+        self.btn_seeker = self._create_role_card("🔍", "Seeker")
 
         self.btn_hider.clicked.connect(lambda: self._set_role("Hider"))
         self.btn_seeker.clicked.connect(lambda: self._set_role("Seeker"))
 
-        # Make all child labels pass mouse events through to the card frame
         self.btn_hider._seal_children()
         self.btn_seeker._seal_children()
 
@@ -187,15 +183,15 @@ class SetupPage(QWidget):
         cards_lay.addWidget(self.btn_seeker)
         role_layout.addLayout(cards_lay)
 
-        main_layout.addWidget(role_widget, alignment=Qt.AlignCenter)
-        main_layout.addSpacing(28)
+        main_layout.addWidget(role_widget)
+        main_layout.addSpacing(16)
 
         # ── Game Mode ───────────────────────────────
         mode_widget = QWidget()
         mode_widget.setFixedWidth(520)
         mode_layout = QVBoxLayout(mode_widget)
         mode_layout.setContentsMargins(0, 0, 0, 0)
-        mode_layout.setSpacing(12)
+        mode_layout.setSpacing(8)
 
         mode_lbl = QLabel("GAME MODE")
         mode_lbl.setProperty("class", "section-label")
@@ -234,8 +230,8 @@ class SetupPage(QWidget):
         )
         mode_layout.addWidget(self._mode_hint)
 
-        main_layout.addWidget(mode_widget, alignment=Qt.AlignCenter)
-        main_layout.addSpacing(36)
+        main_layout.addWidget(mode_widget)
+        main_layout.addSpacing(20)
 
         # ── CTA Button ──────────────────────────────
         self.btn_continue = QPushButton("SELECT A ROLE TO CONTINUE")
@@ -250,74 +246,74 @@ class SetupPage(QWidget):
         shadow.setColor(QColor(99, 102, 241, 120))
         self.btn_continue.setGraphicsEffect(shadow)
 
-        main_layout.addWidget(self.btn_continue, alignment=Qt.AlignCenter)
+        main_layout.addWidget(self.btn_continue)
         main_layout.addStretch()
 
-    def _create_role_card(self, icon: str, title: str, subtitle: str) -> ClickableCard:
-        """
-        Returns a ClickableCard (QFrame subclass with a .clicked Signal).
-        Child widgets have WA_TransparentForMouseEvents set after construction
-        via _seal_children(), so every click — on the icon, the title label,
-        the subtitle label, or the background — reaches the card's
-        mousePressEvent and emits .clicked.
-        """
+    def _create_role_card(self, icon: str, title: str) -> ClickableCard:
         card = ClickableCard()
-        card.setFixedSize(252, 120)
+        card.setFixedSize(200, 140)  # Shrunk from 210 to 140 since text is gone
         card.setCursor(Qt.PointingHandCursor)
         card.setObjectName("RoleCard")
 
         card._style_inactive = f"""
             QFrame#RoleCard {{
-                background-color: {theme.SURFACE};
-                border: 1.5px solid {theme.BORDER};
-                border-radius: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 {theme.SURFACE}, stop:1 #1a2332);
+                border: 2px solid {theme.BORDER};
+                border-radius: 18px;
             }}
             QFrame#RoleCard:hover {{
-                background-color: #263245;
-                border: 1.5px solid {theme.HIGHLIGHT};
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #263245, stop:1 #1e2a3d);
+                border: 2px solid {theme.HIGHLIGHT};
             }}
         """
         card._style_active = f"""
             QFrame#RoleCard {{
-                background-color: rgba(99, 102, 241, 0.12);
-                border: 2px solid {theme.INDIGO};
-                border-radius: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgba(99, 102, 241, 0.15), stop:1 rgba(99, 102, 241, 0.08));
+                border: 3px solid {theme.INDIGO};
+                border-radius: 18px;
+                box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
             }}
         """
         card.setStyleSheet(card._style_inactive)
 
         lay = QVBoxLayout(card)
-        lay.setAlignment(Qt.AlignCenter)
-        lay.setSpacing(6)
-        lay.setContentsMargins(12, 12, 12, 12)
+        lay.setAlignment(Qt.AlignCenter)  # Perfectly center everything in the new box
+        lay.setSpacing(12)
+        lay.setContentsMargins(16, 14, 16, 14)
 
         icon_box = QFrame()
-        icon_box.setFixedSize(38, 38)
-        icon_box.setStyleSheet(
-            f"background: {theme.SURFACE2}; border-radius: 10px; border: none;"
-        )
+        icon_box.setFixedSize(52, 52)
+        icon_box.setStyleSheet(f"""
+            QFrame {{
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 {theme.INDIGO}, stop:1 {theme.CYAN});
+                border-radius: 14px;
+                border: none;
+            }}
+        """)
         icon_box_lay = QHBoxLayout(icon_box)
         icon_box_lay.setContentsMargins(0, 0, 0, 0)
 
         icon_lbl = QLabel(icon)
         icon_lbl.setAlignment(Qt.AlignCenter)
-        icon_lbl.setFont(QFont(theme.FONT_UI, 16))
+        icon_lbl.setFont(QFont(theme.FONT_UI, 22))
         icon_lbl.setStyleSheet("background: transparent; border: none;")
         icon_box_lay.addWidget(icon_lbl)
 
         title_lbl = QLabel(title)
         title_lbl.setAlignment(Qt.AlignCenter)
-        title_lbl.setFont(QFont(theme.FONT_UI, 13, QFont.Weight.Bold))
+        title_lbl.setFont(QFont(theme.FONT_UI, 15, QFont.Weight.Bold))
         title_lbl.setStyleSheet(
-            f"background: transparent; color: {theme.TEXT}; border: none;"
+            f"background: transparent; color: {theme.TEXT}; border: none; letter-spacing: 0.5px;"
         )
 
         lay.addWidget(icon_box, alignment=Qt.AlignCenter)
         lay.addWidget(title_lbl)
 
         return card
-
-    # ── Logic ──────────────────────────────────
 
     def _decrease_n(self):
         if self.world_size > 2:
@@ -344,14 +340,12 @@ class SetupPage(QWidget):
         self._refresh_state()
 
     def _refresh_state(self):
-        # ── Role cards ──
         for card, role in ((self.btn_hider, "Hider"), (self.btn_seeker, "Seeker")):
             if self.selected_role == role:
                 card.setStyleSheet(card._style_active)
             else:
                 card.setStyleSheet(card._style_inactive)
 
-        # ── Mode toggle ──
         if self.selected_mode == "Interactive":
             self.btn_interactive.setProperty("class", "toggle-on")
             self.btn_simulation.setProperty("class", "toggle-off")
@@ -369,7 +363,6 @@ class SetupPage(QWidget):
             btn.style().unpolish(btn)
             btn.style().polish(btn)
 
-        # ── Dimension toggle ──
         if self.selected_dimension == 1:
             self.btn_dim_1d.setProperty("class", "toggle-on")
             self.btn_dim_2d.setProperty("class", "toggle-off")
@@ -378,13 +371,12 @@ class SetupPage(QWidget):
             self.btn_dim_1d.setProperty("class", "toggle-off")
             self.btn_dim_2d.setProperty("class", "toggle-on")
             n = self.world_size
-            self.lbl_locations.setText(f"{n} × {n} grid  =  {n*n} cells")
+            self.lbl_locations.setText(f"{n} × {n} grid  =  {n * n} cells")
 
         for btn in (self.btn_dim_1d, self.btn_dim_2d):
             btn.style().unpolish(btn)
             btn.style().polish(btn)
 
-        # ── CTA ──
         if self.selected_role:
             icon = "🙈" if self.selected_role == "Hider" else "🔍"
             self.btn_continue.setText(

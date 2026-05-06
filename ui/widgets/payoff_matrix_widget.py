@@ -1,4 +1,3 @@
-
 from PySide6.QtWidgets import (
     QTableWidget, QTableWidgetItem, QHeaderView,
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
@@ -49,6 +48,7 @@ class PayoffMatrixWidget(QWidget):
       · X-axis (top):      "SEEKER'S ACTIONS"   (columns)
     The QTableWidget stretches to fill ALL available space with zero scrollbars.
     Works cleanly up to 20×20.
+    Accepts both int and float matrix values.
     """
 
     def __init__(self, title: str = "PAYOFF MATRIX (HIDER POV)", parent=None):
@@ -97,7 +97,7 @@ class PayoffMatrixWidget(QWidget):
         # Row containing [rotated Y-label | table]
         body_row = QHBoxLayout()
         body_row.setContentsMargins(0, 0, 0, 0)
-        body_row.setSpacing(4)
+        body_row.setSpacing(0)  # Reduced from 4 to 0 for tighter spacing
 
         # Y-axis label (rotated, left of table)
         self._y_axis_lbl = RotatedLabel("HIDER'S ACTIONS  →")
@@ -125,10 +125,11 @@ class PayoffMatrixWidget(QWidget):
 
     # ── Public API ────────────────────────────────
 
-    def load_matrix(self, matrix: list[list[int]], place_names: list[str]):
+    def load_matrix(self, matrix: list, place_names: list[str]):
         """
         Populate the table with *matrix* values and colour-coded cells.
-        place_names: row/column header labels (e.g. ["Forest", "City", …])
+        Accepts both int and float values.
+        place_names: row/column header labels (e.g. ["Forest", "City", ...])
         """
         if not matrix or not place_names:
             self._stack.setCurrentIndex(0)
@@ -161,7 +162,20 @@ class PayoffMatrixWidget(QWidget):
         for r in range(n_rows):
             for c in range(n_cols):
                 val = matrix[r][c]
-                text = f"{val:+d}" if val != 0 else "0"
+                # Support both int and float values
+                try:
+                    if val == 0:
+                        text = "0"
+                    elif isinstance(val, float):
+                        if val == int(val):
+                            text = f"{int(val):+d}"   # -3.0 → "-3"
+                        else:
+                            text = f"{val:+.2f}"       # 1.5  → "+1.50"
+                    else:
+                        text = f"{val:+d}"             # plain int
+                except (ValueError, TypeError):
+                    text = str(val)
+
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 item.setFont(cell_font)
@@ -199,7 +213,7 @@ class PayoffMatrixWidget(QWidget):
 
     @staticmethod
     def _adaptive_font_size(n: int) -> int:
-        if n <= 5:   return 16
+        if n <= 5:    return 16
         elif n <= 7:  return 14
         elif n <= 10: return 13
         elif n <= 14: return 11

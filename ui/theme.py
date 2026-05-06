@@ -494,16 +494,12 @@ PLACE_LABELS: dict[str, str] = {
     "X": "Hard",
 }
 
-DIFFICULTY_COLORS: dict[str, str] = {
-    "Easy": CYAN,
-    "Neutral": MUTED,
-    "Hard": RED,
-}
-
 def difficulty_name(place_type: str) -> str:
-    # Example mapping: Forest/Cave -> Neutral, Beach/Park -> Easy, Mountain/Danger -> Hard
+    """Map place type code to difficulty name."""
+    # Backend PlaceType enum values: "Easy", "Neutral", "Hard"
+    # UI codes: B=Beach, V=Valley, F=Forest
     easy_types = {"B", "P", "E"}
-    hard_types = {"M", "D", "X"}
+    hard_types = {"M", "D", "X", "F"}
     if place_type in easy_types:
         return "Easy"
     elif place_type in hard_types:
@@ -511,7 +507,9 @@ def difficulty_name(place_type: str) -> str:
     return "Neutral"
 
 def difficulty_color(place_type: str) -> str:
+    """Return the accent color for the given place type's difficulty."""
     return DIFFICULTY_COLORS[difficulty_name(place_type)]
 
 def difficulty_label(place_type: str) -> str:
+    """Return the short badge string for the given place type's difficulty."""
     return difficulty_name(place_type)
