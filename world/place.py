@@ -4,5 +4,6 @@ from utils.enums.place_type import PlaceType
 
 @dataclass
 class Place:
-    value:int
+    win_value:int
+    lose_value:int
     place_type:PlaceType
