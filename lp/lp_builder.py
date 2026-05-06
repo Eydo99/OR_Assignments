@@ -23,13 +23,13 @@ class LPBuilder:
         constraint_list = self._build_hider_constraints() if(self.computer_role==Role.hider) else self._build_seeker_constraints()
 
         constraint_dict = dict()
-        constraint_dict['rhs'] = 1
+        constraint_dict['RHS'] = 1
         constraint_dict["constraint_type"] = "="
         LHS=[]
         for _ in range(len(self.payoff_matrix)):
             LHS.append(1)
         LHS.append(0)
-        constraint_dict['lhs'] = LHS
+        constraint_dict['LHS'] = LHS
         constraint_list.append(constraint_dict)
 
         return constraint_list
@@ -39,13 +39,13 @@ class LPBuilder:
         constraint_list = []
         for col in range(len(self.payoff_matrix)):
             constraint_dict = dict()
-            constraint_dict['rhs'] = 0
+            constraint_dict['RHS'] = 0
             constraint_dict["constraint_type"] = "<="
             LHS = []
             for row in range(len(self.payoff_matrix)):
                 LHS.append(-1 * self.payoff_matrix[row][col])
             LHS.append(1)
-            constraint_dict['lhs'] = LHS
+            constraint_dict['LHS'] = LHS
             constraint_list.append(constraint_dict)
         return constraint_list
 
@@ -53,13 +53,13 @@ class LPBuilder:
         constraint_list = []
         for row in range(len(self.payoff_matrix)):
             constraint_dict = dict()
-            constraint_dict['rhs'] = 0
+            constraint_dict['RHS'] = 0
             constraint_dict["constraint_type"] = ">="
             LHS = []
             for col in range(len(self.payoff_matrix)):
                 LHS.append(-1 * self.payoff_matrix[row][col])
             LHS.append(1)
-            constraint_dict['lhs'] = LHS
+            constraint_dict['LHS'] = LHS
             constraint_list.append(constraint_dict)
 
         return constraint_list
