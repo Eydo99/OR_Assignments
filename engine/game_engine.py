@@ -18,7 +18,7 @@ from world.world_generator import WorldGenerator
 class GameEngine:
     def __init__(self, world_size, world_dimension, player_role, game_mode_type,
              easy_win_score=2, neutral_win_score=1, hard_win_score=1,
-             easy_lose_score=-3, neutral_lose_score=-1, hard_lose_score=-1):
+             easy_lose_score=-1, neutral_lose_score=-1, hard_lose_score=-3):
         self.easy_win_score = easy_win_score
         self.neutral_win_score = neutral_win_score
         self.hard_win_score = hard_win_score
