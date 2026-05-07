@@ -85,6 +85,9 @@ def main():
 
     # ── Setup complete → initialise real backend, populate War Room ───────────
     def on_setup_complete(n: int, role: str, mode: str, dimension: int):
+        # Reset War Room state from any previous game
+        war_room.reset()
+
         player_role = Role.hider  if role == "Hider" else Role.seeker
         game_mode_enum = (GameModeType.interactive if mode == "Interactive"
                           else GameModeType.simulation)
