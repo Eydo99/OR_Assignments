@@ -31,18 +31,31 @@ class GameEngine:
         self.world_size = world_size
 
     def initialize_game(self)->GameSetup:
-        world:World =WorldGenerator(self.world_size,self.world_dimension,self.easy_win_score,self.neutral_win_score
-                                    ,self.hard_win_score,self.easy_lose_score,self.neutral_lose_score,
-                                    self.hard_lose_score).generate_world()
-        payoff_matrix:np.ndarray=PayoffMatrix(world).generate_payoff_matrix()
-        computer_role= Role.hider if (self.player_role == Role.seeker) else Role.seeker
-        lp_problem_dict=LPBuilder(payoff_matrix,computer_role).build_lp_problem()
-        LP_problem=Parser(lp_problem_dict).build_lp_problem()
-        tableau_matrix=TableauMatrix(LP_problem)
-        tableau_matrix.build_tableau_matrix()
-        solver = SimplexSolver(tableau_matrix,LP_problem)
-        solution_dict=solver.solve()
-        
+        # Retry loop: the simplex solver may return None for certain random
+        # world configurations due to numerical instability.  Re-generating
+        # the world with a different random layout resolves this.
+        max_attempts = 5
+        for attempt in range(max_attempts):
+            world:World =WorldGenerator(self.world_size,self.world_dimension,self.easy_win_score,self.neutral_win_score
+                                        ,self.hard_win_score,self.easy_lose_score,self.neutral_lose_score,
+                                        self.hard_lose_score).generate_world()
+            payoff_matrix:np.ndarray=PayoffMatrix(world).generate_payoff_matrix()
+            computer_role= Role.hider if (self.player_role == Role.seeker) else Role.seeker
+            lp_problem_dict=LPBuilder(payoff_matrix,computer_role).build_lp_problem()
+            LP_problem=Parser(lp_problem_dict).build_lp_problem()
+            tableau_matrix=TableauMatrix(LP_problem)
+            tableau_matrix.build_tableau_matrix()
+            solver = SimplexSolver(tableau_matrix,LP_problem)
+            solution_dict=solver.solve()
+
+            if solution_dict is not None:
+                break
+        else:
+            raise RuntimeError(
+                f"Solver failed after {max_attempts} attempts "
+                f"(world_size={self.world_size}, dim={self.world_dimension})"
+            )
+
         # Extract solver metadata
         probabilities=solution_dict['variables'][:-1]
         game_value = solution_dict['optimal_value']
