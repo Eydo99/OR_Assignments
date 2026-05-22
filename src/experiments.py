@@ -15,7 +15,7 @@ MAX_ITER_N   = 1000
 
 ALPHA_TOO_SMALL = 0.001
 ALPHA_GOOD      = 0.1
-ALPHA_TOO_LARGE = 1.5
+ALPHA_TOO_LARGE = 2.1
 
 # starting points far from optimum — for Newton stability analysis
 FAR_STARTS = [
