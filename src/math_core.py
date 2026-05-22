@@ -4,9 +4,10 @@ import numpy as np
 
 def compute_loss(a, x, y):
     """L = 0.5 * sum((y - (a0 + a1*x))^2)"""
+    n=len(y)
     a0, a1 = a[0], a[1]
     residuals = y - (a0 + a1 * x)
-    return 0.5 * np.sum(residuals ** 2)
+    return 0.5 * np.sum(residuals ** 2)/n
 
 
 def compute_jacobian(a, x, y):
@@ -18,8 +19,9 @@ def compute_jacobian(a, x, y):
     """
     a0, a1 = a[0], a[1]
     residuals = y - (a0 + a1 * x)
-    dL_da0 = -np.sum(residuals)
-    dL_da1 = -np.sum(x * residuals)
+    n = len(x)
+    dL_da0 = -np.sum(residuals) / n
+    dL_da1 = -np.sum(x * residuals) / n
     return np.array([dL_da0, dL_da1])
 
 
@@ -33,8 +35,8 @@ def compute_hessian(x):
     """
     n = len(x)
     H = np.array([
-        [float(n),      np.sum(x)],
-        [np.sum(x),  np.sum(x ** 2)]
+        [1.0,      np.mean(x)],
+        [np.mean(x),  np.mean(x ** 2)]
     ], dtype=float)
     return H
 

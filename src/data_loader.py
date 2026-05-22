@@ -5,9 +5,9 @@ import numpy as np
 def load_and_clean_data(file_path='data/AmesHousing.csv'):
 
     df=pd.read_csv(file_path)
-    df_clean = df[['GrLivArea', 'SalePrice']].dropna()
+    df_clean = df[['Gr Liv Area', 'SalePrice']].dropna()
 
-    x=df_clean['GrLivArea'].values
+    x=df_clean['Gr Liv Area'].values
     y=df_clean['SalePrice'].values #convert column into array
     return x, y
 

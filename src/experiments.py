@@ -5,6 +5,7 @@ from src.data_loader import load_and_clean_data, normalization
 from src.gradient_descent import gradient_descent_loop
 from src.newton import newton_loop
 from src.math_core import compute_loss, denormalize_params
+from src.integration import verify_convergence
 
 # ── shared settings ────────────────────────────────────────────────────────────
 A0_INIT      = [0.0, 0.0]
@@ -194,9 +195,9 @@ def experiment_newton_stability(x, y, stats):
 
     results = []
     for start in FAR_STARTS:
-        _, _, iters_gd, status_gd = gradient_descent_loop(
+        _, hist_gd, iters_gd, status_gd = gradient_descent_loop(
             start, ALPHA_GOOD, x, y, MAX_ITER_GD, TOLERANCE)
-        _, _, iters_nt, status_nt = newton_loop(
+        _, hist_nt, iters_nt, status_nt = newton_loop(
             start, ALPHA_GOOD, x, y, MAX_ITER_N, TOLERANCE)
 
         label = f"[{start[0]}, {start[1]}]"
@@ -204,8 +205,8 @@ def experiment_newton_stability(x, y, stats):
               f"{status_nt:<12} {iters_nt:>9}")
         results.append({
             'start': start,
-            'gd': {'iters': iters_gd, 'status': status_gd},
-            'nt': {'iters': iters_nt, 'status': status_nt},
+            'gd': {'iters': iters_gd, 'status': status_gd, 'history': hist_gd},
+            'nt': {'iters': iters_nt, 'status': status_nt, 'history': hist_nt},
         })
 
     print(f"\n  Stability note:")
@@ -239,6 +240,41 @@ def run_all(file_path='data/AmesHousing.csv'):
     print(f"  NT  a0 (orig scale) : {r1['nt']['a_orig'][0]:.2f}")
     print(f"  NT  a1 (orig scale) : {r1['nt']['a_orig'][1]:.2f}")
     print()
+
+    # --- Verification (Person 3 Day 1) ---
+    verify_convergence()
+
+    # --- Save results to disk (Person 3 Day 2) ---
+    import json, os
+    os.makedirs('results', exist_ok=True)
+
+    def _serialize(obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, dict):
+            return {k: _serialize(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [_serialize(i) for i in obj]
+        return obj
+
+    with open('results/results.json', 'w') as f:
+        json.dump(_serialize({
+            'convergence': r1,
+            'alpha_sensitivity': r2,
+            'curvature': r3,
+            'stability': r4,
+        }), f, indent=2)
+
+    print("\n  Results saved to results/results.json")
+
+    # --- Visualizations (Person 3 Day 2) ---
+    from src.visualize import generate_all_plots
+    generate_all_plots({
+        'convergence': r1,
+        'alpha_sensitivity': r2,
+        'curvature': r3,
+        'stability': r4,
+    })
 
     return {'convergence': r1, 'alpha_sensitivity': r2,
             'curvature': r3, 'stability': r4}
