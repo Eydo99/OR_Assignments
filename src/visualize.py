@@ -194,6 +194,7 @@ def plot_alpha_sensitivity(results_alpha, save_path='results/plot3_alpha_sensiti
         ax.set_ylabel('Loss  L')
         ax.legend(fontsize=8)
         ax.grid(True)
+        axes[0].set_ylim(-0.1, 5.0)
 
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches='tight', facecolor=BG)

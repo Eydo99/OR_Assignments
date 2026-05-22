@@ -1,0 +1,65 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{2}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Problem Formulation}{2}{section.2}\protected@file@percent }
+\newlabel{sec:problem}{{2}{2}{Problem Formulation}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Dataset}{2}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Preprocessing}{2}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Linear Model}{2}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Loss Function}{3}{subsection.2.4}\protected@file@percent }
+\newlabel{eq:loss}{{4}{3}{Loss Function}{equation.2.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Gradient (Jacobian)}{3}{subsection.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6}Hessian Matrix}{3}{subsection.2.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Gradient Descent}{3}{section.3}\protected@file@percent }
+\newlabel{sec:gd}{{3}{3}{Gradient Descent}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Algorithm}{3}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Convergence Criterion}{4}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Stability Condition}{4}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Implementation}{4}{subsection.3.4}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}{\ignorespaces Core GD update loop (gradient\_descent.py)}}{4}{lstlisting.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Newton's Method}{5}{section.4}\protected@file@percent }
+\newlabel{sec:newton}{{4}{5}{Newton's Method}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Algorithm}{5}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Matrix Inversion}{5}{subsection.4.2}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2}{\ignorespaces Analytical 2x2 matrix inverse (newton.py)}}{5}{lstlisting.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Convergence Criterion}{5}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{5}{section.5}\protected@file@percent }
+\newlabel{sec:experiments}{{5}{5}{Experiments}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Experiment 1: GD vs Newton Convergence}{6}{subsection.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Convergence comparison: GD vs Newton ($\alpha = 0.1$)}}{6}{table.caption.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Learned parameters (denormalized to original scale)}}{6}{table.caption.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Loss convergence: GD vs Newton ($\alpha = 0.1$). Left: linear scale. Right: log scale showing the exponential convergence rate. Both curves overlap almost perfectly, confirming identical convergence behavior.}}{6}{figure.caption.3}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:plot1}{{1}{6}{Loss convergence: GD vs Newton ($\alpha = 0.1$). Left: linear scale. Right: log scale showing the exponential convergence rate. Both curves overlap almost perfectly, confirming identical convergence behavior}{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Experiment 2: Effect of Learning Rate $\alpha $ on Gradient Descent}{6}{subsection.5.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces $\alpha $ sensitivity on Gradient Descent}}{6}{table.caption.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Effect of learning rate $\alpha $ on GD convergence. Left: linear scale (zoomed to first 500 iterations). Right: log scale. Orange ($\alpha =0.001$) converges slowly over 6{,}500 iterations. Purple ($\alpha =0.1$) converges in 108 iterations. Red ($\alpha =2.1$) diverges immediately.}}{7}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:plot3}{{2}{7}{Effect of learning rate $\alpha $ on GD convergence. Left: linear scale (zoomed to first 500 iterations). Right: log scale. Orange ($\alpha =0.001$) converges slowly over 6{,}500 iterations. Purple ($\alpha =0.1$) converges in 108 iterations. Red ($\alpha =2.1$) diverges immediately}{figure.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Experiment 3: Newton's Method and Curvature}{7}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Experiment 4: Stability from Far Starting Points}{7}{subsection.5.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Stability analysis: convergence from far starting points ($\alpha = 0.1$)}}{8}{table.caption.6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Stability analysis from far starting points. Each row corresponds to one starting point; left column is GD, right column is Newton. All six panels show smooth convergence within 130–136 iterations.}}{8}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:plot4}{{3}{8}{Stability analysis from far starting points. Each row corresponds to one starting point; left column is GD, right column is Newton. All six panels show smooth convergence within 130–136 iterations}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Analysis and Visualization}{8}{section.6}\protected@file@percent }
+\newlabel{sec:analysis}{{6}{8}{Analysis and Visualization}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Weight Paths}{9}{subsection.6.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Weight evolution over iterations. Top-left: intercept $a_0$ converges to $\approx -1.4 \times 10^{-16}$ (effectively zero after normalization). Top-right: slope $a_1$ converges to $\approx 0.707$. Bottom: 2D weight-space trajectory showing both algorithms trace the same path from $[0, 0]$ to the optimum.}}{9}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:plot2}{{4}{9}{Weight evolution over iterations. Top-left: intercept $a_0$ converges to $\approx -1.4 \times 10^{-16}$ (effectively zero after normalization). Top-right: slope $a_1$ converges to $\approx 0.707$. Bottom: 2D weight-space trajectory showing both algorithms trace the same path from $[0, 0]$ to the optimum}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Gradient Norm Convergence}{10}{subsection.6.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Gradient norm $\|\nabla L\|$ vs iteration on a log scale. The perfectly straight line confirms \textbf  {linear convergence} with a constant rate. GD and Newton are indistinguishable, as expected for a quadratic loss with constant Hessian.}}{10}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:plot5}{{5}{10}{Gradient norm $\|\nabla L\|$ vs iteration on a log scale. The perfectly straight line confirms \textbf {linear convergence} with a constant rate. GD and Newton are indistinguishable, as expected for a quadratic loss with constant Hessian}{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Verification}{10}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Stability Analysis}{10}{section.7}\protected@file@percent }
+\newlabel{sec:stability}{{7}{10}{Stability Analysis}{section.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Why Newton's Method Can Be Vulnerable}{10}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Why Gradient Descent Is More Stable}{11}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Experimental Outcome for This Assignment}{11}{subsection.7.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Summary comparison: GD vs Newton's Method}}{11}{table.caption.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{12}{section.8}\protected@file@percent }
+\bibcite{nocedal}{1}
+\bibcite{boyd}{2}
+\bibcite{ames}{3}
+\bibcite{kaggle}{4}
+\gdef \@abspage@last{14}
